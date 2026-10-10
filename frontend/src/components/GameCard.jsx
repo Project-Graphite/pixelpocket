@@ -14,30 +14,31 @@ function GameCard({ game, onDeleted, index = 0 }) {
 
   return (
     <article className="game-card">
-      <div className="game-card__hang">
-        <span className="game-card__tab" aria-hidden="true" />
-        <Link to={`/games/${game.id}`} className="game-card__link">
-          <span className="game-card__art-wrap">
-            <span className={`game-card__art${cover ? '' : ' game-card__art--blank'}`}>
-              {cover ? (
-                <img src={cover} alt="" loading="lazy" decoding="async" />
-              ) : (
-                <CartridgeArt />
+      <div className="game-card__holder">
+        <Link to={`/games/${game.id}`} className="game-card__cart">
+          <span className="game-card__label">
+            <span className="game-card__art-wrap">
+              <span className={`game-card__art${cover ? '' : ' game-card__art--blank'}`}>
+                {cover ? (
+                  <img src={cover} alt="" loading="lazy" decoding="async" />
+                ) : (
+                  <CartridgeArt />
+                )}
+              </span>
+              {game.battery && (
+                <Sticker
+                  kind="tag"
+                  tilt={-4}
+                  slap
+                  delay={index * 60 + 90}
+                  className="game-card__saves"
+                >
+                  Saves progress
+                </Sticker>
               )}
             </span>
-            {game.battery && (
-              <Sticker
-                kind="tag"
-                tilt={-4}
-                slap
-                delay={index * 60 + 90}
-                className="game-card__saves"
-              >
-                Saves progress
-              </Sticker>
-            )}
+            <span className="game-card__title">{game.title}</span>
           </span>
-          <span className="game-card__title">{game.title}</span>
           {isNew && (
             <Sticker kind="round" tilt={-12} slap delay={index * 60} className="game-card__new">
               New

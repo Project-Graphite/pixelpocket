@@ -10,6 +10,7 @@ const sameOrigin = require('./utils/sameOrigin');
 const errorController = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const gameRouter = require('./routes/gameRoutes');
+const adminRouter = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use(xss());
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/games', gameRouter);
+app.use('/api/v1/admin', adminRouter);
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

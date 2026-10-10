@@ -87,7 +87,7 @@ Library games can be opened by everyone. Private games can only be opened by the
 backend/
 ├── server.js          Entry point: env, DB and storage connection, listen
 ├── app.js             Express app and middleware
-├── controllers/       Request handlers (auth, users, games, saves, errors)
+├── controllers/       Request handlers (auth, users, games, saves, admin, errors)
 ├── models/            Mongoose models (User, Game, Save)
 ├── routes/            Route definitions
 ├── scripts/           Server-side tools (createAdmin.js)

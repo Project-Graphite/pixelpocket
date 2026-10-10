@@ -44,7 +44,7 @@ The dev server runs at http://localhost:3000 and passes `/api` requests to the B
 | `/games/new`              | Upload a game (admins choose the library or their own games)         |
 | `/games/:id`              | Play                                                                 |
 | `/games/:id/edit`         | Rename, change the cover, delete                                     |
-| `/login`, `/signup`, `/forgot-password`, `/reset-password/:token`, `/account` | Accounts |
+| `/login`, `/signup`, `/forgot-password`, `/reset-password/:token`, `/account` | Accounts         |
 | `/privacy`, `/terms`      | Privacy policy and terms of service                                  |
 | anything else             | Not found                                                            |
 
@@ -71,7 +71,7 @@ frontend/
     ├── config/        Site settings (contact email)
     ├── context/       Auth state
     ├── emulator/      Core loading, frame loop, audio, input, save sync, palettes
-    ├── pages/         Home, Library, Play, upload and edit, account, privacy, terms, not found
+    ├── pages/         Home, Library, Play, upload and edit, account, admin, privacy, terms, not found
     └── services/      API client, ROM header reader
 ```
 

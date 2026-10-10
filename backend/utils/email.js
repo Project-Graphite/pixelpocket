@@ -1,13 +1,13 @@
 const nodemailer = require('nodemailer');
 const AppError = require('./appError');
 
-module.exports = async ({ to, subject, message }) => {
+module.exports = async ({ to, subject, text, html }) => {
     if (!process.env.EMAIL_HOST) {
         if (process.env.NODE_ENV === 'production') {
             throw new AppError('Email is not configured on the server.', 500);
         }
         console.log(
-            `\n--- Email (not sent: EMAIL_HOST is unset) ---\nTo: ${to}\nSubject: ${subject}\n\n${message}\n---\n`,
+            `\n--- Email (not sent: EMAIL_HOST is unset) ---\nTo: ${to}\nSubject: ${subject}\n\n${text}\n---\n`,
         );
         return;
     }
@@ -30,7 +30,8 @@ module.exports = async ({ to, subject, message }) => {
                 'PixelPocket <noreply@pixelpocket.local>',
             to,
             subject,
-            text: message,
+            text,
+            html,
         });
     } catch (err) {
         console.error('Email send failed:', err.message);

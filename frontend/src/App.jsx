@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import { GuestRoute, ProtectedRoute } from './components/RouteGuards'
+import { AdminRoute, GuestRoute, ProtectedRoute } from './components/RouteGuards'
 import Home from './pages/Home'
 import Library from './pages/Library'
 import Play from './pages/Play'
@@ -12,6 +12,7 @@ import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Account from './pages/Account'
+import Admin from './pages/Admin'
 import NotFound from './pages/NotFound'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
@@ -38,6 +39,9 @@ function App() {
             <Route path="/games/new" element={<UploadGame />} />
             <Route path="/games/:id/edit" element={<EditGame />} />
             <Route path="/account" element={<Account />} />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -82,8 +82,11 @@ const SECTIONS = [
     body: (
       <>
         <p>
-          The games you upload and your saves are private. Other players can’t see them, and neither
-          can PixelPocket’s admins.
+          The games you upload and your saves are private: other players can’t see them.
+          PixelPocket’s admins can see account and file details to run the service: your name, your
+          email address, the titles, descriptions and sizes of the games you upload, and when your
+          saves were stored. They can’t play your private games or open your saves, and nobody can
+          see your password.
         </p>
         <p>
           Games in the library are added by our team, and anyone can play them. Your name is never
@@ -151,7 +154,7 @@ function Privacy() {
   return (
     <LegalPage
       title="Privacy policy"
-      updated="10 October 2026"
+      updated="11 October 2026"
       lead={
         <>
           This policy explains what PixelPocket collects when you use it, why we need it, and what

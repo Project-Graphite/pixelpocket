@@ -52,6 +52,11 @@ function Header() {
               <NavLink to="/account" className="header__link">
                 Account
               </NavLink>
+              {user.role === 'admin' && (
+                <NavLink to="/admin" className="header__link">
+                  Admin
+                </NavLink>
+              )}
               <button type="button" className="header__link" onClick={handleLogout}>
                 Log out
               </button>

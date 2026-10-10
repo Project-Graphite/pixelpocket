@@ -1,102 +1,126 @@
+/* One case holds every cartridge: a cobalt display case drilled like the pegboard,
+   with a rail along each row */
 .game-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--pitch) * 7)), 1fr));
-  gap: calc(var(--pitch) * 2) var(--pitch);
+  gap: calc(var(--pitch) * 1.25) var(--pitch);
   margin: 0;
-  padding: 0;
+  padding: var(--pitch) var(--pitch) calc(var(--pitch) * 0.75);
   list-style: none;
+  background-color: var(--shell);
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--shell-deep) 80%, transparent) 1.6px,
+    transparent 2.1px
+  );
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
+  border: 2px solid var(--edge);
+  border-radius: 14px;
+  overflow: clip;
+}
+
+/* Cells stretch to their row, so a row's rails line up */
+.game-grid > li {
+  display: grid;
 }
 
 @media (max-width: 30rem) {
   .game-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: calc(var(--pitch) * 1.5) calc(var(--pitch) * 0.75);
+    gap: var(--pitch) calc(var(--pitch) * 0.6);
+    padding: calc(var(--pitch) * 0.9) calc(var(--pitch) * 0.6) calc(var(--pitch) * 0.5);
   }
 }
 
 .game-card {
+  --cart: light-dark(#c9ccd4, #2e3a6e);
+  --cart-ridge: light-dark(#a3a8b5, #1f2856);
+  --corner: 1.1rem;
+
   display: grid;
-  align-content: start;
+  grid-template-rows: 1fr auto;
   gap: 0.6rem;
 }
 
-/* Swings from its tab on hover */
-.game-card__hang {
+.game-card__holder {
   position: relative;
   isolation: isolate;
-  padding-block: 1.25rem 0.75rem;
-  transform-origin: 50% 0;
-  transition: transform var(--step) steps(2, end);
+  display: grid;
+  padding-top: 0.6rem;
 }
 
-.game-card__hang:has(.game-card__link:hover),
-.game-card__hang:has(.game-card__link:focus-visible) {
-  transform: rotate(-2deg);
-}
-
-/* Hang tab with a slot hole */
-.game-card__tab {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 3.5rem;
-  height: 1.6rem;
-  translate: -50% 0;
-  background: var(--surface);
-  border: 2px solid var(--edge);
-  border-bottom: 0;
-  border-radius: 10px 10px 0 0;
-}
-
-.game-card__tab::after {
+/* The case's front rail: it runs the full width of the case (clipped there) and hides
+   the bottoms of the cartridges in its row */
+.game-card__holder::after {
   content: '';
   position: absolute;
-  top: 0.4rem;
-  left: 50%;
-  width: 1.4rem;
-  height: 0.5rem;
-  translate: -50% 0;
-  background: var(--ground);
-  border: 2px solid var(--edge);
-  border-radius: 999px;
+  z-index: 1;
+  inset: auto -100vw 0;
+  height: 2rem;
+  background: var(--shell-deep);
+  border-top: 2px solid color-mix(in srgb, white 35%, var(--shell));
 }
 
-.game-card__link {
+.game-card__cart {
   position: relative;
-  display: grid;
-  gap: 0.6rem;
-  padding: 0.55rem 0.55rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 0.6rem 2.1rem;
   color: var(--ink);
   text-decoration: none;
-  background: var(--surface);
-  border: 2px solid var(--edge);
-  border-radius: var(--radius-box);
+  transition: translate var(--step) steps(2, end);
 }
 
-/* Two more boxes behind, fanned out from the hook like a deck */
-.game-card__link::before,
-.game-card__link::after {
+/* Lifts out of the holder */
+.game-card__cart:hover,
+.game-card__cart:focus-visible {
+  translate: 0 -0.5rem;
+}
+
+.game-card__cart:focus-visible {
+  outline: 3px solid var(--sticker-yellow);
+  outline-offset: 3px;
+}
+
+/* The shell: an edge layer under a fill layer, with the cartridge's cut top-right corner
+   and grip ridges along the top. Drawn behind the content so stickers aren't clipped. */
+.game-card__cart::before,
+.game-card__cart::after {
   content: '';
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: var(--surface-2);
+  background: var(--edge);
+  border-radius: 8px;
+  clip-path: polygon(0 0, calc(100% - var(--corner)) 0, 100% var(--corner), 100% 100%, 0 100%);
+}
+
+.game-card__cart::after {
+  inset: 2px;
+  background:
+    repeating-linear-gradient(var(--cart-ridge) 0 2px, transparent 2px 5px) 0.5rem 0.3rem /
+      calc(100% - var(--corner) - 1rem) 0.6rem no-repeat,
+    var(--cart);
+  border-radius: 6px;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--corner) + 1.2px) 0,
+    100% calc(var(--corner) - 1.2px),
+    100% 100%,
+    0 100%
+  );
+}
+
+.game-card__label {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.4rem 0.55rem;
+  background: var(--surface);
   border: 2px solid var(--edge);
-  border-radius: var(--radius-box);
-  transform-origin: 50% 0;
-  rotate: 2deg;
-  translate: 0 5px;
-}
-
-.game-card__link::after {
-  z-index: -2;
-  rotate: -2.5deg;
-  translate: 0 9px;
-}
-
-.game-card__link:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .game-card__art-wrap {
@@ -111,7 +135,7 @@
   overflow: hidden;
   color: var(--line);
   background: var(--surface-2);
-  border-radius: 6px;
+  border-radius: 2px;
 }
 
 .game-card__art--blank {
@@ -133,21 +157,21 @@
 
 .game-card__title {
   font-weight: 700;
-  font-size: 1.05rem;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
 
-.game-card__link:hover .game-card__title {
+.game-card__cart:hover .game-card__title {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
 
+/* Top-left, so the cartridge's cut corner stays visible */
 .game-card__new {
   position: absolute;
   top: -0.85rem;
-  right: -0.85rem;
+  left: -0.85rem;
 }
 
 .game-card__saves {
@@ -156,8 +180,9 @@
   bottom: -0.3rem;
 }
 
-/* Kept apart so Delete isn't hit by accident */
+/* Kept apart so Delete isn't hit by accident. The case is dark in both themes. */
 .game-card__actions {
+  color-scheme: dark;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -171,11 +196,10 @@
   flex-basis: 100%;
 }
 
-/* Placeholders while games load */
-.game-card--loading .game-card__hang::after {
+/* Empty holders while games load */
+.game-card--loading .game-card__holder::before {
   content: '';
-  display: block;
-  aspect-ratio: 0.82;
+  aspect-ratio: 0.73;
   border: 2px dashed var(--line);
-  border-radius: var(--radius-box);
+  border-radius: 8px;
 }

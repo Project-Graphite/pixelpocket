@@ -3,6 +3,7 @@ const { promisify } = require('util');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
+const resetPasswordEmail = require('./../utils/resetPasswordEmail');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
@@ -128,14 +129,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const resetURL = `${frontendUrl}/reset-password/${resetToken}`;
 
     try {
-        await sendEmail({
-            to: user.email,
-            subject: 'Your PixelPocket password reset link',
-            message: `Forgot your password? Open this link to choose a new one (valid for 10 minutes):
-${resetURL}
-
-If you didn't ask for this, you can ignore this email.`,
-        });
+        await sendEmail({ to: user.email, ...resetPasswordEmail(resetURL) });
     } catch (err) {
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;

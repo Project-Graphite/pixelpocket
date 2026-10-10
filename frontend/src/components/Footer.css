@@ -1,5 +1,4 @@
 .footer {
-  margin-top: calc(var(--pitch) * 2);
   border-top: 2px solid var(--edge);
   background: var(--surface);
 }
@@ -9,8 +8,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem 1.5rem;
-  min-height: 4rem;
+  gap: 0.25rem 1.5rem;
+  padding-block: 0.75rem;
 }
 
 .footer__name {
@@ -31,4 +30,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0 1.5rem;
+}
+
+@media (max-width: 30rem) {
+  .footer__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-block: 1.25rem 0.75rem;
+  }
 }

@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import NotFound from '../pages/NotFound'
 
 // Guests are sent to log in, then back here
 export function ProtectedRoute() {
@@ -18,4 +19,10 @@ export function GuestRoute() {
   if (loading) return null
   if (user) return <Navigate to="/" replace />
   return <Outlet />
+}
+
+// Inside ProtectedRoute: anyone but an admin gets the not-found page
+export function AdminRoute() {
+  const { user } = useAuth()
+  return user.role === 'admin' ? <Outlet /> : <NotFound />
 }

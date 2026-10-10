@@ -185,9 +185,7 @@ function Library({ scope }) {
         <ul className="game-grid" aria-label="Loading games">
           {Array.from({ length: 8 }, (_, i) => (
             <li key={i} className="game-card game-card--loading" aria-hidden="true">
-              <span className="game-card__hang">
-                <span className="game-card__tab" />
-              </span>
+              <span className="game-card__holder" />
             </li>
           ))}
         </ul>

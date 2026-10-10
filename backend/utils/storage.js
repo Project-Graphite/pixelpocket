@@ -3,6 +3,7 @@ const {
     PutObjectCommand,
     GetObjectCommand,
     DeleteObjectsCommand,
+    ListObjectsV2Command,
     HeadBucketCommand,
 } = require('@aws-sdk/client-s3');
 const AppError = require('./appError');
@@ -69,6 +70,21 @@ exports.pipeTo = async (key, res, headers) => {
         res.on('close', resolve);
         object.Body.pipe(res);
     });
+};
+
+// One page of files; pass `next` back as `after` for the following page
+exports.list = async (after) => {
+    const res = await client.send(
+        new ListObjectsV2Command({ Bucket, MaxKeys: 100, ContinuationToken: after }),
+    );
+    return {
+        files: (res.Contents || []).map((o) => ({
+            key: o.Key,
+            size: o.Size,
+            lastModified: o.LastModified,
+        })),
+        next: res.NextContinuationToken || null,
+    };
 };
 
 exports.remove = async (keyList) => {
