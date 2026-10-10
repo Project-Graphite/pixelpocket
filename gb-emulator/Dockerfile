@@ -5,7 +5,7 @@
 #                    a failing test fails the image build.
 
 # --- WebAssembly ---
-FROM emscripten/emsdk:4.0.15 AS wasm
+FROM emscripten/emsdk:6.0.11 AS wasm
 WORKDIR /src
 COPY CMakeLists.txt ./
 COPY include ./include
