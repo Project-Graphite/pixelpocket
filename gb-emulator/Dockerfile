@@ -17,7 +17,7 @@ FROM scratch AS wasm-out
 COPY --from=wasm /out/ /
 
 # --- Native build and tests ---
-FROM ubuntu:24.04 AS test
+FROM ubuntu:26.04 AS test
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential cmake \
