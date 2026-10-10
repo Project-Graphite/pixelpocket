@@ -50,7 +50,7 @@ services:
       - ./infra/minio:/scripts:ro
 
   backend:
-    build: ./Backend
+    build: ./backend
     restart: unless-stopped
     depends_on:
       mongo:
@@ -77,7 +77,7 @@ services:
 
   frontend:
     build:
-      context: ./Frontend
+      context: ./frontend
       # The Frontend image compiles the emulator to WebAssembly from this folder
       additional_contexts:
         emulator: ./gb-emulator
