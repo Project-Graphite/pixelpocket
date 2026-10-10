@@ -9,18 +9,18 @@ This repository is a monorepo with three top-level projects:
 ```
 PixelPocket/
 ├── gb-emulator/   Game Boy emulator core (C++)
-├── Frontend/      Web application (React)
-└── Backend/       API service
+├── frontend/      Web application (React)
+└── backend/       API service
 ```
 
-Each folder is a self-contained project with its own build and its own README. This document describes how they fit together.
+Each folder is a self-contained project with its own build and its own README.
 
 ### gb-emulator
 
 A Game Boy (DMG) emulator written in C++20: CPU, graphics, sound, timers, input, and cartridge support (ROM-only, MBC1, MBC3 with its real-time clock, and MBC5). It has no dependency on a windowing system or audio library at its core, which lets it run two ways:
 
-- as a native application, for development and testing, with its own unit test suites and test ROMs
-- compiled to WebAssembly, for use inside the Frontend application
+- as a desktop application with an SDL2 window
+- compiled to WebAssembly, inside the website
 
 See [`gb-emulator/README.md`](gb-emulator/README.md) for the emulator's full feature list, build instructions, and test suite.
 
@@ -62,12 +62,12 @@ The emulator runs in the visitor's browser, so gameplay has no server round-trip
 
 ## Deployment
 
-Each project has its own `Dockerfile`, and `docker-compose.yml` at the root runs the platform:
+Each project has its own `Dockerfile`, and `docker-compose.yml` at the root runs the whole platform:
 
 | Service          | Image source         | Role                                                                  |
 | ---------------- | -------------------- | --------------------------------------------------------------------- |
-| `frontend`       | `Frontend/`          | Compiles the emulator to WebAssembly, builds the React app, serves it with nginx, proxies `/api` |
-| `backend`        | `Backend/`           | Express API on port 5000 (internal)                                   |
+| `frontend`       | `frontend/`          | Compiles the emulator to WebAssembly, builds the React app, serves it with nginx, proxies `/api` |
+| `backend`        | `backend/`           | Express API on port 5000 (internal)                                   |
 | `mongo`          | `mongo:7`            | Database, data kept in the `mongo-data` volume                        |
 | `minio`          | `chainguard/minio`   | File storage for ROMs, covers and saves, kept in the `minio-data` volume |
 | `minio-init`     | `chainguard/minio`   | Runs once: creates the bucket and the Backend's restricted account    |
@@ -76,7 +76,7 @@ Each project has its own `Dockerfile`, and `docker-compose.yml` at the root runs
 ```bash
 cp .env.example .env        # then set the passwords and secrets in it
 docker compose up -d --build
-docker compose exec backend node scripts/createAdmin.js    # make your admin account
+docker compose exec backend node scripts/createAdmin.js    # create the first admin account
 ```
 
 The site is then at http://localhost:8080 (change with `WEB_PORT`). To build the emulator and run its tests:
@@ -85,8 +85,10 @@ The site is then at http://localhost:8080 (change with `WEB_PORT`). To build the
 docker compose --profile test run --rm emulator-tests
 ```
 
+In production, `compose.production.yaml` runs the same services from prebuilt images (`ghcr.io/project-graphite/pixelpocket/frontend` and `backend`), with resource limits and health checks. Its secrets come from the environment: `MONGO_PASSWORD`, `MINIO_ROOT_PASSWORD`, `S3_SECRET_KEY`, `JWT_SECRET`, and the `EMAIL_*` settings.
+
 ## License
 
 PixelPocket is released under the [MIT License](LICENSE).
 
-The test ROMs in `gb-emulator/roms/tests/` (Blargg's test ROMs and `dmg-acid2`) belong to their authors and keep their own licenses. Game Boy games are not part of this project. Users may only upload games they own or have the right to use.
+Game Boy games are not part of this project. Users may only upload games they own or have the right to use.

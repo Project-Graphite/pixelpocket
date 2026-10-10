@@ -30,14 +30,14 @@ namespace gb
 
         struct Square
         {
-            bool on = false;      
-            bool dac = false;     
-            int duty = 0;         
-            int duty_pos = 0;     
-            int length = 0;       
+            bool on = false;
+            bool dac = false;
+            int duty = 0;
+            int duty_pos = 0;
+            int length = 0;
             bool length_on = false;
-            int freq = 0;         
-            int timer = 0;    
+            int freq = 0;
+            int timer = 0;
             Envelope env;
 
             // Sweep (channel 1 only)
@@ -54,7 +54,7 @@ namespace gb
         {
             bool on = false;
             bool dac = false;
-            int length = 0; 
+            int length = 0;
             bool length_on = false;
             int freq = 0;
             int timer = 0;

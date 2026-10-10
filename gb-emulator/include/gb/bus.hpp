@@ -27,10 +27,7 @@ namespace gb
             u8 ie = 0;                              // 0xFFFF
             u8 iflag = 0;                           // 0xFF0F
 
-            // SB (0xFF01) holds one byte to send over the link cable; SC (0xFF02)'s bit 7 starts
-            // a transfer and is cleared by hardware once it finishes. With no real cable attached,
-            // writes to SC trigger a fake instant transfer: SB's byte lands here and bit 7 is
-            // cleared right away -- this is how test ROMs like cpu_instrs print results headlessly.
+            // Bytes sent over the serial port. Test ROMs such as cpu_instrs print their results this way.
             std::vector<u8> serial_output;
 
             Joypad joypad; // 0xFF00

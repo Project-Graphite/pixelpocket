@@ -34,7 +34,7 @@ namespace
 
 int main()
 {
-    // ---- Registers (Milestone 1) ----
+    // ---- Registers ----
     {
         Registers regs;
         regs.bc = 0x1234;
@@ -51,7 +51,7 @@ int main()
         check((regs.f & 0x0F) == 0, "the low nibble of F is always masked to 0");
     }
 
-    // ---- Bus memory map (Milestone 3.5) ----
+    // ---- Bus memory map ----
     {
         GameBoy gb;
         gb.bus.write(0xC010, 0x42);
@@ -90,7 +90,7 @@ int main()
         check((gb.bus.read(0xFF02) & 0x80) == 0, "SC's start bit clears right away (no real link cable)");
     }
 
-    // ---- CPU opcodes (Milestone 3), now via GameBoy's owned Bus+CPU ----
+    // ---- CPU opcodes ----
     {
         GameBoy gb;
         load_program(gb, {0x06, 0x05, 0x48}); // LD B,5 ; LD C,B
@@ -148,8 +148,6 @@ int main()
         check(gb.cpu.regs.sp == 0xFFFC, "CALL nn pushes a return address, moving SP down by 2");
     }
     {
-        // Bus::write is real now (Milestone 3.5), so this can actually check
-        // the round-trip through memory, not just the SP/PC side effects.
         GameBoy gb;
         load_program(gb, {0x01, 0x34, 0x12, 0xC5, 0xD1}); // LD BC,0x1234 ; PUSH BC ; POP DE
         gb.cpu.regs.sp = 0xFFFE;
@@ -160,7 +158,7 @@ int main()
         check(gb.cpu.regs.sp == 0xFFFE, "the stack pointer returns to its starting value");
     }
 
-    // ---- Timer (Milestone 5) ----
+    // ---- Timer ----
     {
         Timer timer;
         timer.tac = 0x05; // enabled, fastest rate: 16 cycles per TIMA increment
@@ -192,7 +190,7 @@ int main()
         check(gb.timer.div == 0, "writing any value to DIV resets it to 0");
     }
 
-    // ---- Interrupts (Milestone 5) ----
+    // ---- Interrupts ----
     {
         // IE and IF both have the timer bit set, IME is on: should dispatch.
         GameBoy gb;

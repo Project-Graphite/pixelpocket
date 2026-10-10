@@ -48,17 +48,14 @@ exports.getGames = catchAsync(async (req, res, next) => {
             : { visibility: 'library' };
 
     const features = new APIFeatures(Game.find(base), req.query, {
-        filterable: ['battery'],
         sortable: ['title', 'createdAt'],
         searchable: 'title',
         defaultSort: 'title',
         defaultLimit: 24,
         maxLimit: 48,
     })
-        .filter()
         .search()
         .sort()
-        .limitFields()
         .paginate();
 
     const [games, total] = await Promise.all([

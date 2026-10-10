@@ -8,6 +8,8 @@
 #include "gb/mbc/mbc5.hpp"
 #include <cstdio>
 #include <ctime>
+#include <fstream>
+#include <iterator>
 #include <memory>
 
 namespace gb
@@ -33,9 +35,12 @@ namespace gb
             }
         }
 
-        bool is_stored_io(u16 addr)
+        template <typename T>
+        std::unique_ptr<T> make(const std::vector<u8> &rom, std::size_t ram, bool battery)
         {
-            return addr == 0xFF01 || addr == 0xFF02 || addr == 0xFF46; // SB, SC, DMA
+            auto mbc = std::make_unique<T>(rom, ram);
+            mbc->battery = battery;
+            return mbc;
         }
 
         std::unique_ptr<MBC> make_mbc(const std::vector<u8> &rom)
@@ -52,37 +57,20 @@ namespace gb
             {
             case 0x00:
             case 0x08:
-                return std::make_unique<RomOnly>(rom, ram);
             case 0x09:
-            {
-                auto plain = std::make_unique<RomOnly>(rom, ram);
-                plain->battery = true;
-                return plain;
-            }
+                return make<RomOnly>(rom, ram, type == 0x09);
             case 0x01:
             case 0x02:
-                return std::make_unique<MBC1>(rom, ram);
             case 0x03:
-            {
-                auto mbc1 = std::make_unique<MBC1>(rom, ram);
-                mbc1->battery = true;
-                return mbc1;
-            }
+                return make<MBC1>(rom, ram, type == 0x03);
             case 0x0F:
             case 0x10:
-            {
-                auto mbc3 = std::make_unique<MBC3>(rom, ram);
-                mbc3->battery = true;
-                mbc3->has_rtc = true;
-                return mbc3;
-            }
             case 0x11:
             case 0x12:
-                return std::make_unique<MBC3>(rom, ram);
             case 0x13:
             {
-                auto mbc3 = std::make_unique<MBC3>(rom, ram);
-                mbc3->battery = true;
+                auto mbc3 = make<MBC3>(rom, ram, type != 0x11 && type != 0x12);
+                mbc3->has_rtc = type <= 0x10;
                 return mbc3;
             }
             case 0x19:
@@ -92,15 +80,25 @@ namespace gb
             case 0x1D:
             case 0x1E:
             {
-                auto mbc5 = std::make_unique<MBC5>(rom, ram);
+                auto mbc5 = make<MBC5>(rom, ram, type == 0x1B || type == 0x1E);
                 mbc5->rumble = type >= 0x1C;
-                mbc5->battery = type == 0x1B || type == 0x1E;
                 return mbc5;
             }
             default:
                 fprintf(stderr, "Unsupported cartridge type 0x%02X; running as ROM only\n", type);
                 return std::make_unique<RomOnly>(rom, ram);
             }
+        }
+
+        bool read_file(const std::string &path, std::vector<u8> &data)
+        {
+            std::ifstream file(path, std::ios::binary);
+            if (!file)
+            {
+                return false;
+            }
+            data.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+            return !file.bad();
         }
     }
 
@@ -135,7 +133,7 @@ namespace gb
         {
             return wram[addr - 0xC000];
         }
-        if (addr <= 0xFDFF) // echo RAM -- mirrors 0xC000-0xDDFF
+        if (addr <= 0xFDFF) // echo RAM, mirrors 0xC000-0xDDFF
         {
             return wram[addr - 0xE000];
         }
@@ -147,87 +145,60 @@ namespace gb
         {
             return 0xFF;
         }
-        if (addr == 0xFF40) // LCDC
-        {
-            return ppu.lcdc;
-        }
-        if (addr == 0xFF41) // STAT
-        {
-            return ppu.stat_read();
-        }
-        if (addr == 0xFF42) // SCY
-        {
-            return ppu.scy;
-        }
-        if (addr == 0xFF43) // SCX
-        {
-            return ppu.scx;
-        }
-        if (addr == 0xFF44) // LY
-        {
-            return ppu.ly;
-        }
-        if (addr == 0xFF45) // LYC
-        {
-            return ppu.lyc;
-        }
-        if (addr == 0xFF47) // BGP
-        {
-            return ppu.bgp;
-        }
-        if (addr == 0xFF48) // SP0
-        {
-            return ppu.sp0;
-        }
-        if (addr == 0xFF49) // SP1
-        {
-            return ppu.sp1;
-        }
-        if (addr == 0xFF4A) // WY
-        {
-            return ppu.wy;
-        }
-        if (addr == 0xFF4B) // WX
-        {
-            return ppu.wx;
-        }
-        if (addr == 0xFF00) // joypad
-        {
-            return joypad.read();
-        }
-        if (addr == 0xFF04) // DIV -- top byte of the internal counter
-        {
-            return static_cast<u8>(timer.div >> 8);
-        }
-        if (addr == 0xFF05) // TIMA
-        {
-            return static_cast<u8>(timer.tima);
-        }
-        if (addr == 0xFF06) // TMA
-        {
-            return static_cast<u8>(timer.tma);
-        }
-        if (addr == 0xFF07) // TAC -- unused bits read as 1
-        {
-            return static_cast<u8>(timer.tac | 0xF8);
-        }
-        if (addr == 0xFF0F) // IF
-        {
-            return iflag | 0xE0;
-        }
         if (addr >= 0xFF10 && addr <= 0xFF3F) // sound registers and wave RAM
         {
             return apu.read(addr);
         }
-        if (addr <= 0xFF7F) // I/O registers: unmapped ones read 0xFF, as on a DMG
-        {
-            return is_stored_io(addr) ? io_regs[addr - 0xFF00] : 0xFF;
-        }
-        if (addr <= 0xFFFE) // HRAM
+        if (addr >= 0xFF80 && addr <= 0xFFFE) // HRAM
         {
             return hram[addr - 0xFF80];
         }
-        return ie; // 0xFFFF
+
+        switch (addr)
+        {
+        case 0xFF00:
+            return joypad.read();
+        case 0xFF01: // SB
+        case 0xFF02: // SC
+        case 0xFF46: // DMA
+            return io_regs[addr - 0xFF00];
+        case 0xFF04: // DIV is the top byte of the internal counter
+            return static_cast<u8>(timer.div >> 8);
+        case 0xFF05:
+            return static_cast<u8>(timer.tima);
+        case 0xFF06:
+            return static_cast<u8>(timer.tma);
+        case 0xFF07: // TAC: unused bits read as 1
+            return static_cast<u8>(timer.tac | 0xF8);
+        case 0xFF0F:
+            return iflag | 0xE0;
+        case 0xFF40:
+            return ppu.lcdc;
+        case 0xFF41:
+            return ppu.stat_read();
+        case 0xFF42:
+            return ppu.scy;
+        case 0xFF43:
+            return ppu.scx;
+        case 0xFF44:
+            return ppu.ly;
+        case 0xFF45:
+            return ppu.lyc;
+        case 0xFF47:
+            return ppu.bgp;
+        case 0xFF48:
+            return ppu.sp0;
+        case 0xFF49:
+            return ppu.sp1;
+        case 0xFF4A:
+            return ppu.wy;
+        case 0xFF4B:
+            return ppu.wx;
+        case 0xFFFF:
+            return ie;
+        default: // unmapped I/O reads 0xFF, as on a DMG
+            return 0xFF;
+        }
     }
 
     void Bus::write(u16 addr, u8 value)
@@ -258,7 +229,7 @@ namespace gb
             wram[addr - 0xC000] = value;
             return;
         }
-        if (addr <= 0xFDFF) // echo RAM -- mirrors 0xC000-0xDDFF
+        if (addr <= 0xFDFF) // echo RAM, mirrors 0xC000-0xDDFF
         {
             wram[addr - 0xE000] = value;
             return;
@@ -272,101 +243,64 @@ namespace gb
         {
             return;
         }
-        if (addr == 0xFF02) // SC -- writing the transfer-start bit captures SB immediately
+        if (addr >= 0xFF10 && addr <= 0xFF3F) // sound registers and wave RAM
         {
+            apu.write(addr, value);
+            return;
+        }
+        if (addr >= 0xFF80 && addr <= 0xFFFE) // HRAM
+        {
+            hram[addr - 0xFF80] = value;
+            return;
+        }
+
+        switch (addr)
+        {
+        case 0xFF00:
+            joypad.write(value);
+            break;
+        case 0xFF01: // SB
+            io_regs[addr - 0xFF00] = value;
+            break;
+        case 0xFF02: // SC: with no link cable, a transfer finishes at once and SB is captured
             io_regs[addr - 0xFF00] = value;
             if (value & 0x80)
             {
-                serial_output.push_back(io_regs[0xFF01 - 0xFF00]); // SB
-                io_regs[addr - 0xFF00] &= 0x7F;                    // no link cable attached -- "finish" the transfer at once
+                serial_output.push_back(io_regs[0x01]);
+                io_regs[addr - 0xFF00] &= 0x7F;
             }
-            return;
-        }
-        if (addr == 0xFF04) // DIV -- writing any value resets it to 0
-        {
+            break;
+        case 0xFF04: // DIV: any write resets it
             timer.div = 0;
-            return;
-        }
-        if (addr == 0xFF05) // TIMA
-        {
+            break;
+        case 0xFF05:
             timer.tima = value;
-            return;
-        }
-        if (addr == 0xFF06) // TMA
-        {
+            break;
+        case 0xFF06:
             timer.tma = value;
-            return;
-        }
-        if (addr == 0xFF07) // TAC
-        {
+            break;
+        case 0xFF07:
             timer.tac = value;
-            return;
-        }
-        if (addr == 0xFF00) // joypad
-        {
-            joypad.write(value);
-            return;
-        }
-        if (addr == 0xFF0F) // IF
-        {
+            break;
+        case 0xFF0F:
             iflag = value;
-            return;
-        }
-        if (addr == 0xFF40) // LCDC
-        {
+            break;
+        case 0xFF40:
             ppu.lcdc = value;
-            return;
-        }
-        if (addr == 0xFF41) // STAT
-        {
+            break;
+        case 0xFF41:
             ppu.stat = value & 0x78;
-            return;
-        }
-        if (addr == 0xFF42) // SCY
-        {
+            break;
+        case 0xFF42:
             ppu.scy = value;
-            return;
-        }
-        if (addr == 0xFF43) // SCX
-        {
+            break;
+        case 0xFF43:
             ppu.scx = value;
-            return;
-        }
-        if (addr == 0xFF44) // LY -- writing has no effect
-        {
-            return;
-        }
-        if (addr == 0xFF45) // LYC
-        {
+            break;
+        case 0xFF45:
             ppu.lyc = value;
-            return;
-        }
-        if (addr == 0xFF47) // BGP
-        {
-            ppu.bgp = value;
-            return;
-        }
-        if (addr == 0xFF48) // SP0
-        {
-            ppu.sp0 = value;
-            return;
-        }
-        if (addr == 0xFF49) // SP1
-        {
-            ppu.sp1 = value;
-            return;
-        }
-        if (addr == 0xFF4A) // WY
-        {
-            ppu.wy = value;
-            return;
-        }
-        if (addr == 0xFF4B) // WX
-        {
-            ppu.wx = value;
-            return;
-        }
-        if (addr == 0xFF46) // DMA -- copies 160 bytes into OAM
+            break;
+        case 0xFF46: // DMA: copies 160 bytes into OAM
         {
             io_regs[addr - 0xFF00] = value;
             u16 source = static_cast<u16>(value << 8);
@@ -374,55 +308,35 @@ namespace gb
             {
                 oam[i] = read(static_cast<u16>(source + i));
             }
-            return;
+            break;
         }
-        if (addr >= 0xFF10 && addr <= 0xFF3F) // sound registers and wave RAM
-        {
-            apu.write(addr, value);
-            return;
+        case 0xFF47:
+            ppu.bgp = value;
+            break;
+        case 0xFF48:
+            ppu.sp0 = value;
+            break;
+        case 0xFF49:
+            ppu.sp1 = value;
+            break;
+        case 0xFF4A:
+            ppu.wy = value;
+            break;
+        case 0xFF4B:
+            ppu.wx = value;
+            break;
+        case 0xFFFF:
+            ie = value;
+            break;
+        default: // LY and unmapped I/O ignore writes
+            break;
         }
-        if (addr <= 0xFF7F) // I/O registers: writes to unmapped ones are ignored, as on a DMG
-        {
-            if (is_stored_io(addr))
-            {
-                io_regs[addr - 0xFF00] = value;
-            }
-            return;
-        }
-        if (addr <= 0xFFFE) // HRAM
-        {
-            hram[addr - 0xFF80] = value;
-            return;
-        }
-        ie = value; // 0xFFFF
     }
 
     bool Bus::load_rom(const std::string &filename)
     {
-        FILE *file = fopen(filename.c_str(), "rb");
-        if (!file)
-        {
-            return false;
-        }
-
-        fseek(file, 0, SEEK_END);
-        long size = ftell(file);
-        if (size < 0)
-        {
-            fclose(file);
-            return false;
-        }
-        fseek(file, 0, SEEK_SET);
-
-        std::vector<u8> data(static_cast<size_t>(size));
-        size_t read = fread(data.data(), 1, data.size(), file);
-        fclose(file);
-        if (read != data.size())
-        {
-            return false;
-        }
-
-        return load_rom_data(std::move(data));
+        std::vector<u8> data;
+        return read_file(filename, data) && load_rom_data(std::move(data));
     }
 
     bool Bus::load_rom_data(std::vector<u8> data)
@@ -471,35 +385,8 @@ namespace gb
 
     bool Bus::load_save(const std::string &path)
     {
-        if (!has_battery())
-        {
-            return false;
-        }
-
-        FILE *file = fopen(path.c_str(), "rb");
-        if (!file)
-        {
-            return false;
-        }
-
-        fseek(file, 0, SEEK_END);
-        long size = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        if (size < 0)
-        {
-            fclose(file);
-            return false;
-        }
-
-        std::vector<u8> data(static_cast<size_t>(size));
-        size_t read = fread(data.data(), 1, data.size(), file);
-        fclose(file);
-        if (read != data.size())
-        {
-            return false;
-        }
-
-        return load_battery_data(data);
+        std::vector<u8> data;
+        return has_battery() && read_file(path, data) && load_battery_data(data);
     }
 
     bool Bus::save_ram(const std::string &path) const
@@ -510,13 +397,8 @@ namespace gb
             return true;
         }
 
-        FILE *file = fopen(path.c_str(), "wb");
-        if (!file)
-        {
-            return false;
-        }
-        size_t written = fwrite(data.data(), 1, data.size(), file);
-        fclose(file);
-        return written == data.size();
+        std::ofstream file(path, std::ios::binary);
+        file.write(reinterpret_cast<const char *>(data.data()), static_cast<std::streamsize>(data.size()));
+        return static_cast<bool>(file);
     }
 }

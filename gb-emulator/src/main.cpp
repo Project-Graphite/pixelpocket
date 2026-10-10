@@ -17,14 +17,11 @@ int main(int argc, char *argv[])
     }
 
     GameBoy gb;
-    bool success = gb.load_rom(argv[1]);
-    if (!success)
+    if (!gb.load_rom(argv[1]))
     {
         cerr << "Failed to load ROM: " << argv[1] << "\n";
         return 1;
     }
-    cout << "ROM loaded successfully: " << argv[1] << "\n";
-
     string save_path = filesystem::path(argv[1]).replace_extension(".sav").string();
     gb.bus.load_save(save_path);
 
@@ -40,26 +37,17 @@ int main(int argc, char *argv[])
     bool running = true;
     while (running)
     {
-        int cycles = 0;
-        while (cycles < CYCLES_PER_FRAME)
-        {
-            cycles += gb.step();
-        }
-
+        gb.run_frame();
         frontend.present(gb.ppu.framebuffer);
         frontend.queue_audio(gb.bus.apu.take_samples());
         running = frontend.poll_events(gb.bus.joypad);
     }
 #else
+    // Without a window: run one second and print the screen as text
     for (int frame = 0; frame < 60; frame++)
     {
-        int cycles = 0;
-        while (cycles < CYCLES_PER_FRAME)
-        {
-            cycles += gb.step();
-        }
+        gb.run_frame();
     }
-    printf("lcdc=%02X bgp=%02X scx=%d scy=%d\n", gb.ppu.lcdc, gb.ppu.bgp, gb.ppu.scx, gb.ppu.scy);
     const char shades[] = " .:#";
     for (int y = 0; y < SCREEN_HEIGHT; y++)
     {

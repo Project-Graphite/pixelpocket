@@ -27,7 +27,7 @@ You need a C++20 compiler, CMake 3.16 or newer, and SDL2 for the window. The emu
 ```powershell
 cmake -B build
 cmake --build build --config Release
-.\build\Release\gb-emulator.exe roms\dmg-acid2.gb
+.\build\Release\gb-emulator.exe path\to\game.gb
 ```
 
 If CMake cannot find SDL2, point `SDL2_DIR` at the folder that contains `SDL2Config.cmake` and reconfigure. The SDL2 DLL is copied next to the executable automatically.
@@ -38,10 +38,8 @@ If CMake cannot find SDL2, point `SDL2_DIR` at the folder that contains `SDL2Con
 sudo apt install libsdl2-dev   # or: brew install sdl2
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-./build/gb-emulator roms/dmg-acid2.gb
+./build/gb-emulator path/to/game.gb
 ```
-
-Build in `Release` for normal play. The `Debug` default is much slower, and frame pacing can fall behind.
 
 Without SDL2, CMake builds only the core and tests. The `gb-emulator` executable then runs headless for 60 frames and prints the screen as ASCII.
 
@@ -97,10 +95,7 @@ cd build && ctest -C Release --output-on-failure
 | `mbc_tests` | MBC3 clock, latching, halt, day overflow, save and load |
 | `apu_tests` | Register masks, channel status, length counters, power, panning, sample rate |
 
-Test ROMs live in `roms/tests/`:
-
-- Blargg's `cpu_instrs` (all 11 sub-tests, `01`–`11`) passes. The ROM reports its results over the serial port, which the emulator captures in `Bus::serial_output`.
-- `dmg-acid2` (by Matt Currie) checks the graphics pipeline. This emulator renders it correctly.
+The emulator also passes all 11 of Blargg's `cpu_instrs` tests and renders Matt Currie's `dmg-acid2` correctly. These test ROMs are not included in the repository.
 
 ## Project layout
 
@@ -122,10 +117,7 @@ src/               Implementation of the headers above
   main.cpp         Command-line entry point
 scripts/           build-wasm.sh (Emscripten build)
 tests/             Unit test executables
-roms/tests/        Test ROMs
 ```
-
-The emulator core (`gbcore`) has no SDL2 dependency. The SDL2 frontend is compiled only if SDL2 is found.
 
 ## Timing
 
@@ -136,10 +128,9 @@ The emulator runs at the hardware's speed of 4,194,304 cycles per second, which 
 - Mode 3 length uses an approximation of about six cycles per sprite. Real hardware varies by sprite position and background.
 - The frame sequencer runs on its own counter rather than being tied to the `DIV` register, so games that rely on exact `DIV` writes may sound slightly different.
 - Audio has no high-pass filter, so output may have a small DC offset compared with hardware.
-- The clock format used in save files is specific to this emulator (see Save files).
 
 ## References
 
 - [Pan Docs](https://gbdev.io/pandocs/): the main hardware reference
 - [Opcode table](https://gbdev.io/gb-opcodes/optables/)
-- Blargg's test ROMs and `dmg-acid2` are the work of their authors and are included for testing only.
+- [Blargg's test ROMs](https://github.com/retrio/gb-test-roms) and [dmg-acid2](https://github.com/mattcurrie/dmg-acid2)

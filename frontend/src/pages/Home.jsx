@@ -5,6 +5,7 @@ import { useAuth } from '../context/useAuth'
 import Lcd from '../components/Lcd'
 import GameCard from '../components/GameCard'
 import Splash from '../components/Splash'
+import Sticker from '../components/Sticker'
 import './Home.css'
 
 const INTRO_KEY = 'pixelpocket:intro-seen'
@@ -104,9 +105,14 @@ function Home() {
                 See the whole library
               </Link>
             </div>
-            <p className="home__note">
-              The library currently holds a small set of demo games for trying out the emulator. The
-              emulator is still in development, so some of them may not run perfectly yet.
+            <p className="home__note board" role="note">
+              <Sticker kind="tag" tilt={-3}>
+                Demo library
+              </Sticker>
+              <span className="home__note-text">
+                These games are a small demo collection for trying out the emulator. PixelPocket is
+                still in development, so some of them may not run perfectly yet.
+              </span>
             </p>
             <ul className="game-grid">
               {newest.map((game, index) => (

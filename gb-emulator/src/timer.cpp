@@ -1,23 +1,33 @@
 #include "gb/timer.hpp"
 
-namespace gb {
-    bool Timer::tick(int cycles) {
-        div += cycles;
+namespace gb
+{
+    namespace
+    {
+        // CPU cycles per TIMA increment for each TAC clock select
+        constexpr int PERIODS[] = {1024, 16, 64, 256};
+    }
 
-        if(tac & 0x04) {
-            int cnt = (tac & 0x03) == 0 ? 1024 : (tac & 0x03) == 1 ? 16 : (tac & 0x03) == 2 ? 64 : 256;
-            timer_counter += cycles;
-
-            while(timer_counter >= cnt) {
-                timer_counter -= cnt;
-                if(tima == 0xff) {
-                    tima = tma;
-                    return true; 
-                }
-                tima++;
-            }
+    bool Timer::tick(int cycles)
+    {
+        div = static_cast<u16>(div + cycles);
+        if (!(tac & 0x04))
+        {
+            return false;
         }
 
+        int period = PERIODS[tac & 0x03];
+        timer_counter += cycles;
+        while (timer_counter >= period)
+        {
+            timer_counter -= period;
+            if (tima == 0xFF)
+            {
+                tima = tma;
+                return true;
+            }
+            tima++;
+        }
         return false;
     }
 }

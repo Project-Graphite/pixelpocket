@@ -73,21 +73,25 @@
   border-radius: var(--radius-box);
 }
 
-/* Two more boxes stacked behind, like a deck on the hook */
+/* Two more boxes behind, fanned out from the hook like a deck */
 .game-card__link::before,
 .game-card__link::after {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: 0 6px -8px;
-  background: var(--surface);
+  inset: 0;
+  background: var(--surface-2);
   border: 2px solid var(--edge);
   border-radius: var(--radius-box);
+  transform-origin: 50% 0;
+  rotate: 2deg;
+  translate: 0 5px;
 }
 
 .game-card__link::after {
   z-index: -2;
-  inset: 0 12px -14px;
+  rotate: -2.5deg;
+  translate: 0 9px;
 }
 
 .game-card__link:focus-visible {

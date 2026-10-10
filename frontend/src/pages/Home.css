@@ -54,9 +54,19 @@
 }
 
 .home__note {
-  max-width: 60ch;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  max-width: 50rem;
   margin-block: 0.75rem calc(var(--pitch) * 1.5);
-  color: var(--muted);
+  padding: 0.85rem 1.1rem;
+  border-style: dashed;
+}
+
+.home__note-text {
+  flex: 1 1 0;
+  min-width: 12rem;
 }
 
 .home__more {
