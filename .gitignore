@@ -17,7 +17,7 @@ coverage/
 *.tsbuildinfo
 
 # Built emulator (WebAssembly), produced by npm run build:wasm or the Docker build
-Frontend/public/emulator/
+frontend/public/emulator/
 
 # ---------- C++ / gb-emulator ----------
 build/
