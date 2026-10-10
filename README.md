@@ -62,7 +62,7 @@ The emulator runs in the visitor's browser, so gameplay has no server round-trip
 
 ## Deployment
 
-Each project has its own `Dockerfile`, and `docker-compose.yml` at the root runs the whole platform:
+Each project has its own `Dockerfile`, and `compose.yml` at the root runs the whole platform:
 
 | Service          | Image source         | Role                                                                  |
 | ---------------- | -------------------- | --------------------------------------------------------------------- |

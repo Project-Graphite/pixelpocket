@@ -115,8 +115,8 @@ a:hover {
   outline-offset: 2px;
 }
 
-/* Fills the window so the footer sits at the bottom. Tilted stickers overshoot their
-   boxes; clipping here (not on body, which hands it to the window) stops sideways scroll. */
+/* Fills the window so the footer sits at the bottom. Clips tilted stickers here, not on
+   body, which would pass the clip to the window and allow sideways scrolling. */
 .app {
   display: flex;
   flex-direction: column;

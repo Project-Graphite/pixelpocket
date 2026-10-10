@@ -12,7 +12,7 @@ const HIDDEN_FIELDS = { password: 0, passwordResetToken: 0 };
 // Whole IDs only, so a 64-character file hash doesn't count as one
 const OBJECT_ID = /\b[a-f\d]{24}\b/gi;
 
-// The names of the users and games whose IDs appear in the values, so admins see who and what
+// Names for the user and game IDs found in the values
 const namesFor = async (values) => {
     const ids = [...new Set(values.flatMap((value) => String(value).match(OBJECT_ID) ?? []))];
     if (!ids.length) return {};

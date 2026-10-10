@@ -1,5 +1,5 @@
 # --- Emulator: compile the C++ core to WebAssembly ---
-# "emulator" is the gb-emulator folder, passed in by docker-compose.yml and CI (.build-contexts)
+# "emulator" is the gb-emulator folder, passed in by compose.yml and CI (.build-contexts)
 FROM emscripten/emsdk:4.0.15 AS wasm
 WORKDIR /src
 COPY --from=emulator CMakeLists.txt ./

@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../services/api'
 import { useAuth } from '../context/useAuth'
-import GameCard from '../components/GameCard'
+import GameRack from '../components/GameRack'
 import Pagination from '../components/Pagination'
 import Alert from '../components/Alert'
 import Lcd from '../components/Lcd'
@@ -181,15 +181,7 @@ function Library({ scope }) {
 
       <Alert>{error}</Alert>
 
-      {!result && !error && (
-        <ul className="game-grid" aria-label="Loading games">
-          {Array.from({ length: 8 }, (_, i) => (
-            <li key={i} className="game-card game-card--loading" aria-hidden="true">
-              <span className="game-card__holder" />
-            </li>
-          ))}
-        </ul>
-      )}
+      {!result && !error && <GameRack games={[]} slots={8} label="Loading games" />}
 
       {result && games.length > 0 && (
         <>
@@ -197,13 +189,7 @@ function Library({ scope }) {
             {result.total === 1 ? '1 game' : `${result.total} games`}
             {search.trim() && ` matching “${search.trim()}”`}
           </p>
-          <ul className="game-grid">
-            {games.map((game, index) => (
-              <li key={game.id}>
-                <GameCard game={game} index={index} onDeleted={handleDeleted} />
-              </li>
-            ))}
-          </ul>
+          <GameRack games={games} onDeleted={handleDeleted} />
           <Pagination page={result.page} pages={result.pages} onChange={changePage} />
         </>
       )}

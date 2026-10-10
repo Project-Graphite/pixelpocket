@@ -23,7 +23,7 @@ namespace gb
         u8 wx = 0;           // Window X Position (screen column plus 7)
         u8 window_line = 0;  // Row inside the window; advances only on rows where the window is drawn
 
-        std::vector<u8> framebuffer = std::vector<u8>(SCREEN_WIDTH * SCREEN_HEIGHT); // Framebuffer to store pixel data
+        std::vector<u8> framebuffer = std::vector<u8>(SCREEN_WIDTH * SCREEN_HEIGHT);
         const std::vector<u8> *oam_source = nullptr;
 
         bool stat_line = false;

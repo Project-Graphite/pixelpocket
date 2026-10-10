@@ -137,7 +137,6 @@ function Play() {
   const touch = touchPref === null ? touchSeen : touchPref === 'on'
   const canFullscreen = Boolean(document.fullscreenEnabled)
 
-  // ---------- Game details ----------
   useEffect(() => {
     let cancelled = false
     setGame(null)
@@ -155,7 +154,6 @@ function Play() {
     }
   }, [id, account])
 
-  // ---------- Emulator, ROM and save ----------
   useEffect(() => {
     if (!game || authLoading) return undefined
     let cancelled = false
@@ -214,7 +212,6 @@ function Play() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.id, account, authLoading])
 
-  // ---------- Controls ----------
   const start = useCallback(async () => {
     const e = engine.current
     if (!e || phaseRef.current !== 'ready') return
@@ -327,7 +324,6 @@ function Play() {
     return () => window.removeEventListener('touchstart', onTouch)
   }, [touchSeen])
 
-  // ---------- Settings ----------
   useEffect(() => {
     engine.current?.audio?.setVolume(muted ? 0 : volume)
     writePref('volume', String(volume))
@@ -349,7 +345,6 @@ function Play() {
     engine.current?.input.setSource('touch', held)
   }, [])
 
-  // ---------- Page ----------
   if (loadError?.status === 404) return <NotFound />
   if (loadError) {
     return (

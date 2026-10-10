@@ -1,41 +1,55 @@
-/* One case holds every cartridge: a cobalt display case drilled like the pegboard,
-   with a rail along each row */
-.game-grid {
+/* One holder per row of games; GameRack splits them into rows */
+.game-rack {
+  display: grid;
+  gap: calc(var(--pitch) * 1.25);
+}
+
+/* A cartridge storage case: foam with a slot per cartridge in a clear frame.
+   Its grid sets how many cartridges fit a row. */
+.game-rack__row {
+  --foam: light-dark(#3c404c, #15171c);
+  --clear: light-dark(#f5f6f8, #545765);
+  --slot-gap: 9px;
+  --notch: 1.8rem;
+
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--pitch) * 7)), 1fr));
-  gap: calc(var(--pitch) * 1.25) var(--pitch);
-  margin: 0;
-  padding: var(--pitch) var(--pitch) calc(var(--pitch) * 0.75);
-  list-style: none;
-  background-color: var(--shell);
-  background-image: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--shell-deep) 80%, transparent) 1.6px,
-    transparent 2.1px
-  );
-  background-size: var(--pitch) var(--pitch);
-  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
-  border: 2px solid var(--edge);
-  border-radius: 14px;
+  /* Keeps neighbouring slots and notches apart */
+  column-gap: 2.25rem;
+  padding: var(--pitch);
+  background: var(--foam);
+  border: 10px solid var(--clear);
+  border-radius: 18px;
+  outline: 2px solid var(--edge);
+  box-shadow: inset 0 3px 8px rgb(0 0 0 / 0.5);
   overflow: clip;
 }
 
-/* Cells stretch to their row, so a row's rails line up */
-.game-grid > li {
+/* Cells stretch to the row's height, so the cartridges line up */
+.game-rack__row > * {
   display: grid;
 }
 
 @media (max-width: 30rem) {
-  .game-grid {
+  .game-rack__row {
+    --slot-gap: 7px;
+    --notch: 1.4rem;
+
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--pitch) calc(var(--pitch) * 0.6);
-    padding: calc(var(--pitch) * 0.9) calc(var(--pitch) * 0.6) calc(var(--pitch) * 0.5);
+    column-gap: 1.6rem;
+    padding: calc(var(--pitch) * 0.75);
+    border-width: 7px;
   }
 }
 
+/* The cartridges keep their dark-theme colours in both themes */
 .game-card {
-  --cart: light-dark(#c9ccd4, #2e3a6e);
-  --cart-ridge: light-dark(#a3a8b5, #1f2856);
+  --cart: #2e3a6e;
+  --cart-ridge: #1f2856;
+  --edge: #6170bf;
+  --ink: #edf0fa;
+  --surface: #131c43;
+  --surface-2: #1a2552;
   --corner: 1.1rem;
 
   display: grid;
@@ -50,16 +64,38 @@
   padding-top: 0.6rem;
 }
 
-/* The case's front rail: it runs the full width of the case (clipped there) and hides
-   the bottoms of the cartridges in its row */
+/* The slot: the cartridge's shape plus a rim, floored by the clear case */
+.game-card__holder::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: calc(0.6rem - var(--slot-gap)) calc(var(--slot-gap) * -1) calc(var(--slot-gap) * -1);
+  background: var(--clear);
+  border-radius: 12px;
+  box-shadow: inset 0 3px 6px rgb(0 0 0 / 0.5);
+  /* 0.6 keeps the rim the same width along the cut corner */
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--corner) - var(--slot-gap) * 0.6) 0,
+    100% calc(var(--corner) + var(--slot-gap) * 0.6),
+    100% 100%,
+    0 100%
+  );
+}
+
+/* Finger notch */
 .game-card__holder::after {
   content: '';
   position: absolute;
-  z-index: 1;
-  inset: auto -100vw 0;
-  height: 2rem;
-  background: var(--shell-deep);
-  border-top: 2px solid color-mix(in srgb, white 35%, var(--shell));
+  z-index: -2;
+  top: calc(42% - var(--notch) / 2);
+  right: calc(var(--slot-gap) * -1 - var(--notch) / 2);
+  width: var(--notch);
+  height: var(--notch);
+  background: var(--clear);
+  border-radius: 50%;
+  box-shadow: inset 0 3px 6px rgb(0 0 0 / 0.5);
+  clip-path: inset(0 0 0 50%);
 }
 
 .game-card__cart {
@@ -83,8 +119,8 @@
   outline-offset: 3px;
 }
 
-/* The shell: an edge layer under a fill layer, with the cartridge's cut top-right corner
-   and grip ridges along the top. Drawn behind the content so stickers aren't clipped. */
+/* The shell, with the cut corner and grip ridges. Drawn behind the content so the
+   stickers aren't clipped. */
 .game-card__cart::before,
 .game-card__cart::after {
   content: '';
@@ -133,7 +169,6 @@
   place-items: center;
   aspect-ratio: 1;
   overflow: hidden;
-  color: var(--line);
   background: var(--surface-2);
   border-radius: 2px;
 }
@@ -180,9 +215,12 @@
   bottom: -0.3rem;
 }
 
-/* Kept apart so Delete isn't hit by accident. The case is dark in both themes. */
+/* Kept apart so Delete isn't hit by accident; light text for the dark foam */
 .game-card__actions {
-  color-scheme: dark;
+  --ink: #edf0fa;
+  --danger: #ff8a8a;
+  --focus: var(--sticker-yellow);
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -196,10 +234,11 @@
   flex-basis: 100%;
 }
 
-/* Empty holders while games load */
-.game-card--loading .game-card__holder::before {
-  content: '';
-  aspect-ratio: 0.73;
-  border: 2px dashed var(--line);
-  border-radius: 8px;
+/* Empty slots while games load, sized from their own width so the column stays put */
+.game-card--empty {
+  container-type: inline-size;
+}
+
+.game-card--empty .game-card__holder {
+  min-height: calc(100cqi / 0.8);
 }

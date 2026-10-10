@@ -14,7 +14,7 @@ API service behind PixelPocket: accounts, the game library, uploads, cover image
 
 ## Getting started
 
-The easiest way is the root `docker-compose.yml`, which also starts MongoDB and MinIO. To run the Backend on its own, with MongoDB and MinIO already running:
+The easiest way is the root `compose.yml`, which also starts MongoDB and MinIO. To run the Backend on its own, with MongoDB and MinIO already running:
 
 ```bash
 npm install
@@ -26,7 +26,7 @@ The server runs at http://localhost:5000 (`PORT`) and restarts when files change
 
 ## Configuration
 
-Outside Docker, settings are read from `config.env` in this folder. In Docker, `docker-compose.yml` passes them in from the root `.env`.
+Outside Docker, settings are read from `config.env` in this folder. In Docker, `compose.yml` passes them in from the root `.env`.
 
 | Variable                | Description                                          |
 | ----------------------- | ---------------------------------------------------- |
@@ -71,6 +71,8 @@ All routes are under `/api/v1`.
 | `GET/PUT/DELETE /games/:id/save`  | logged in                  | Your battery save for the game (raw bytes)      |
 
 Library games can be opened by everyone. Private games can only be opened by their owner; for anyone else, admins included, they don't exist (404).
+
+**Admin** (`/admin`, admins only, read-only): `GET collections` lists the database collections with their sizes, `GET collections/:name?page=` returns a page of documents (passwords and reset tokens are never included), and `GET files?after=` lists stored files. Responses also carry the names of any users and games whose IDs they contain.
 
 ## Security
 

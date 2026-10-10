@@ -45,12 +45,13 @@ The dev server runs at http://localhost:3000 and passes `/api` requests to the B
 | `/games/:id`              | Play                                                                 |
 | `/games/:id/edit`         | Rename, change the cover, delete                                     |
 | `/login`, `/signup`, `/forgot-password`, `/reset-password/:token`, `/account` | Accounts         |
+| `/admin`                  | Admins only: browse the database and stored files                    |
 | `/privacy`, `/terms`      | Privacy policy and terms of service                                  |
 | anything else             | Not found                                                            |
 
 ## Look and feel
 
-The site looks like a 1990s game shop: games hang on a pegboard wall, and stickers mark new games, games that save progress, and the save status while playing. It has light and dark themes that follow the system setting until the visitor picks one with the toggle; the choice is remembered. The home page opens with a short start-up animation once per visit, which any click or key skips. Animations are turned off when the system asks for reduced motion.
+The site looks like a 1990s game shop: a pegboard wall where the games sit as cartridges in storage cases, one case per row, and stickers mark new games, games that save progress, and the save status while playing. It has light and dark themes that follow the system setting until the visitor picks one with the toggle; the choice is remembered. The home page opens with a short start-up animation once per visit, which any click or key skips. Animations are turned off when the system asks for reduced motion.
 
 ## The player
 
@@ -66,7 +67,7 @@ frontend/
 ├── public/            theme.js, audio-worklet.js, favicon, emulator/ (built)
 ├── nginx.conf         nginx for the Docker image, with security-headers.conf (CSP and more)
 └── src/
-    ├── components/    Header, Footer, Logo, Lcd, Splash, game cards, stickers, touch controls,
+    ├── components/    Header, Footer, Logo, Lcd, Splash, game cards and racks, stickers, touch controls,
     │                  legal page layout, form fields, route guards
     ├── config/        Site settings (contact email)
     ├── context/       Auth state

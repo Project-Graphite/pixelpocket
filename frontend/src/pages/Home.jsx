@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../services/api'
 import { useAuth } from '../context/useAuth'
 import Lcd from '../components/Lcd'
-import GameCard from '../components/GameCard'
+import GameRack from '../components/GameRack'
 import Splash from '../components/Splash'
 import Sticker from '../components/Sticker'
 import './Home.css'
@@ -114,13 +114,7 @@ function Home() {
                 still in development, so some of them may not run perfectly yet.
               </span>
             </p>
-            <ul className="game-grid">
-              {newest.map((game, index) => (
-                <li key={game.id}>
-                  <GameCard game={game} index={index} />
-                </li>
-              ))}
-            </ul>
+            <GameRack games={newest} />
           </section>
         )}
 

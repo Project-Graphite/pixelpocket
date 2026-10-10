@@ -3,8 +3,7 @@ const AppError = require('./../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 const storage = require('./../utils/storage');
 
-// The user always comes from the session, never the request, so nobody can reach another
-// player's save
+// The user comes from the session, never the request, so nobody can reach another player's save
 
 exports.getSave = catchAsync(async (req, res) => {
     const save = await Save.findOne({ user: req.user._id, game: req.game._id }).select('+key');
