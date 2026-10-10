@@ -1,7 +1,0 @@
-name: project-template
-
-services:
-  web:
-    build: ./web
-    ports:
-      - "8080:80"

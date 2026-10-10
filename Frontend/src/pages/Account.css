@@ -1,0 +1,26 @@
+.account {
+  width: min(100% - 2rem, 40rem);
+  margin-inline: auto;
+  padding-block: calc(var(--pitch) * 2) calc(var(--pitch) * 4);
+}
+
+.account__title {
+  margin-bottom: calc(var(--pitch) * 1.5);
+}
+
+.account__section {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: var(--pitch);
+  padding: calc(var(--pitch) * 1.25);
+}
+
+.account__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem calc(var(--pitch) * 1.5);
+}
+
+.account__form-actions {
+  justify-self: start;
+}

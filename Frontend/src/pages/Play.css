@@ -1,0 +1,436 @@
+.play {
+  padding-block: 1.25rem 4rem;
+}
+
+/* ---------- Stage: title, screen, touch buttons, control bar ---------- */
+
+.play__stage {
+  /* Height left for the header, title and bar; the screen takes the rest */
+  --reserved: 15.5rem;
+  --console-w: min(100%, calc((100dvh - var(--reserved)) * 10 / 9));
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    'title'
+    'console'
+    'bar';
+  justify-items: center;
+  gap: 1rem;
+  width: min(100% - 2rem, 70rem);
+  margin-inline: auto;
+}
+
+.play__title {
+  grid-area: title;
+  width: min(100%, 50rem);
+  min-width: min(100%, 16rem);
+  overflow: hidden;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.05;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Portrait touch screens: the pad's parts join this grid, under the screen */
+.play__stage[data-touch] {
+  --reserved: 27rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'title title'
+    'console console'
+    'dpad actions'
+    'system system'
+    'bar bar';
+  row-gap: 1.25rem;
+}
+
+.play__stage[data-touch] .pad {
+  display: contents;
+}
+
+.play__stage[data-touch] .pad__dpad {
+  margin-left: 0.5rem;
+}
+
+.play__stage[data-touch] .pad__actions {
+  margin-right: 0.5rem;
+}
+
+/* Touch screens held sideways: D-pad on the left, A and B on the right */
+@media (orientation: landscape) {
+  .play__stage[data-touch] {
+    --reserved: 16rem;
+    --console-w: min(calc((100dvh - var(--reserved)) * 10 / 9), calc(100vw - 25rem));
+    width: 100%;
+    padding-inline: 1.5rem;
+    grid-template-columns: 1fr auto 1fr;
+    /* The D-pad ends at mid-height and Select/Start begin there */
+    grid-template-rows: auto 1fr 1fr auto;
+    grid-template-areas:
+      '. title .'
+      'dpad console actions'
+      'system console actions'
+      '. bar .';
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .play__stage[data-touch] .play__console,
+  .play__stage[data-touch] .play__title {
+    width: var(--console-w);
+  }
+
+  .play__stage[data-touch] .pad__dpad,
+  .play__stage[data-touch] .pad__actions {
+    justify-self: center;
+    width: clamp(6.5rem, 14vw, 10rem);
+    margin: 0;
+  }
+
+  .play__stage[data-touch] .pad__dpad {
+    align-self: end;
+  }
+
+  .play__stage[data-touch] .pad__actions {
+    grid-row: 2 / 4;
+  }
+
+  .play__stage[data-touch] .pad__system {
+    align-self: start;
+    gap: 0.5rem;
+  }
+}
+
+/* Phones held sideways: the bar moves beside the screen, the title is for screen readers only */
+@media (orientation: landscape) and (max-height: 34rem) {
+  .play:has(.play__stage[data-touch]) {
+    padding-block: 0.25rem 2rem;
+  }
+
+  .play__stage[data-touch] {
+    --reserved: 6.5rem;
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+      'dpad console actions'
+      'system console bar';
+    gap: 0.5rem 1.25rem;
+  }
+
+  .play__stage[data-touch] .play__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .play__stage[data-touch] .pad__dpad,
+  .play__stage[data-touch] .pad__system {
+    align-self: center;
+  }
+
+  .play__stage[data-touch] .pad__actions {
+    grid-row: 1;
+  }
+
+  .play__stage[data-touch] .play__bar {
+    justify-content: center;
+  }
+
+  /* No room beside the screen; these show when the phone is upright */
+  .play__stage[data-touch] .play__volume,
+  .play__stage[data-touch] .play__palette,
+  .play__stage[data-touch] .play__save {
+    display: none;
+  }
+}
+
+/* Full screen: title for screen readers only */
+.play__stage[data-fullscreen] {
+  --reserved: 6rem;
+  width: 100%;
+  min-height: 100dvh;
+  align-content: center;
+  padding: 1rem;
+  background: var(--ground);
+}
+
+.play__stage[data-fullscreen] .play__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.play__stage[data-fullscreen][data-touch] {
+  --reserved: 19rem;
+}
+
+@media (orientation: landscape) {
+  .play__stage[data-fullscreen][data-touch] {
+    --reserved: 5rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 34rem) {
+  .play__stage[data-fullscreen][data-touch] {
+    --reserved: 2.5rem;
+  }
+}
+
+/* ---------- The screen ---------- */
+
+.play__console {
+  grid-area: console;
+  width: var(--console-w);
+  min-width: min(100%, 16rem);
+  padding: clamp(0.5rem, 2vw, 1.1rem) clamp(0.5rem, 2vw, 1.1rem) clamp(0.9rem, 3vw, 1.75rem);
+  background: var(--bezel);
+  border: 2px solid var(--bezel-deep);
+  border-radius: 0.9rem 0.9rem 2.4rem 0.9rem;
+}
+
+.play__screen {
+  position: relative;
+  aspect-ratio: 10 / 9;
+  overflow: hidden;
+  background: var(--lcd-bg);
+  border-radius: 0.3rem;
+}
+
+.play__screen canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.play__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.25rem;
+  padding: 1rem;
+  text-align: center;
+  color: var(--lcd-ink);
+  background: color-mix(in srgb, var(--lcd-bg) 82%, transparent);
+  font-weight: 600;
+}
+
+/* Drawn in the screen's own colours */
+.play__overlay .btn--primary {
+  color: var(--lcd-bg);
+  background: var(--lcd-ink);
+  border-color: var(--lcd-ink);
+}
+
+.play__overlay .btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--lcd-ink) 82%, var(--lcd-bg));
+  border-color: transparent;
+}
+
+.play__overlay :focus-visible {
+  outline-color: var(--lcd-ink);
+}
+
+.play__face {
+  width: clamp(3rem, 18%, 6rem);
+}
+
+.play__error {
+  max-width: 24rem;
+  font-weight: 500;
+}
+
+/* ---------- Control bar ---------- */
+
+.play__bar {
+  grid-area: bar;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  width: 100%;
+  max-width: 50rem;
+}
+
+.play__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.875rem;
+  height: 2.875rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition:
+    background-color var(--step) steps(2, end),
+    transform var(--step) steps(2, end);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.icon-btn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+.icon-btn[aria-pressed='true'] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent-deep);
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.play__volume {
+  width: 6.5rem;
+  margin-inline: 0.25rem 0.5rem;
+  accent-color: var(--accent);
+}
+
+.play__palette {
+  min-height: 2.875rem;
+  padding: 0 2.25rem 0 0.85rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236170bf' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 0.7rem center / 1rem;
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-control);
+  appearance: none;
+  cursor: pointer;
+}
+
+.play__save {
+  display: flex;
+  align-items: center;
+  min-height: 2.875rem;
+}
+
+.play__save-error {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+@media (max-width: 30rem) {
+  .play__volume {
+    display: none;
+  }
+
+  .play__tools {
+    gap: 0.35rem;
+  }
+
+  .icon-btn,
+  .play__palette {
+    height: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  .icon-btn {
+    width: 2.75rem;
+  }
+
+  .play__palette {
+    padding: 0 1.9rem 0 0.6rem;
+    background-position: right 0.5rem center;
+  }
+}
+
+/* ---------- Game details ---------- */
+
+.play__info {
+  display: grid;
+  gap: var(--pitch);
+  max-width: 50rem;
+  margin-top: calc(var(--pitch) * 2);
+}
+
+.play__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--pitch);
+}
+
+/* Kept apart so Delete isn't hit by accident */
+.play__manage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem calc(var(--pitch) * 2);
+}
+
+.play__manage .delete-confirm__text {
+  max-width: 18rem;
+}
+
+.play__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.play__description {
+  max-width: 62ch;
+  font-size: 1.05rem;
+  white-space: pre-line;
+}
+
+.play__guest {
+  max-width: 62ch;
+  padding: 1rem 1.15rem;
+  font-weight: 600;
+}
+
+.play__help {
+  padding: 1rem 1.25rem;
+}
+
+.play__help summary {
+  width: fit-content;
+  min-height: 32px;
+  font-stretch: 75%;
+  font-weight: 800;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.play__help dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 1rem 0;
+}
+
+.play__help dt {
+  font-weight: 800;
+}
+
+.play__help dd {
+  margin: 0;
+  color: var(--muted);
+}

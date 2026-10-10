@@ -1,0 +1,494 @@
+/* light-dark() picks the first colour in light mode and the second in dark mode */
+:root {
+  color-scheme: light dark;
+  --ground: light-dark(#eceff3, #0b1230);
+  --peg: light-dark(#d3d9e2, #18224a);
+  --surface: light-dark(#ffffff, #131c43);
+  --surface-2: light-dark(#f3f5f9, #1a2552);
+  --ink: light-dark(#0f1a33, #edf0fa);
+  --muted: light-dark(#4a5675, #a7b2d6);
+  --line: light-dark(#c3cbd8, #2a3770);
+  --edge: light-dark(#0f1a33, #6170bf);
+  --shell: light-dark(#2341c4, #1d35a8);
+  --shell-deep: light-dark(#142a8f, #0f1f6e);
+  --shell-ink: #ffffff;
+  --shell-muted: light-dark(#ccd6ff, #c2ccf5);
+  --accent: light-dark(#2341c4, #3f5ff0);
+  --accent-deep: light-dark(#142a8f, #2a46c9);
+  --accent-ink: #ffffff;
+  --link: light-dark(#2341c4, #a5b6ff);
+  --focus: light-dark(#2341c4, #ffd43b);
+  --danger: light-dark(#c0262d, #ff8a8a);
+  --success: light-dark(#1d7a3e, #74d996);
+  --lcd-bg: #a9c97a;
+  --lcd-ink: #25381a;
+  --bezel: light-dark(#1d2445, #1c2552);
+  --bezel-deep: light-dark(#121831, #6170bf);
+
+  /* Stickers look the same in both themes */
+  --sticker-orange: #ff5b23;
+  --sticker-yellow: #ffd43b;
+  --sticker-red: #ff8a80;
+  --sticker-ink: #0f1a33;
+
+  --pitch: 24px; /* the pegboard spacing */
+  --radius-box: 10px;
+  --radius-control: 8px;
+  --font: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace;
+  --step: 90ms; /* one frame of the stepped motion */
+}
+
+/* A theme picked with the toggle overrides the system's */
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--accent);
+  scrollbar-color: var(--edge) var(--ground);
+  background-color: var(--ground);
+  background-image: radial-gradient(circle, var(--peg) 1.6px, transparent 2.1px);
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
+}
+
+::selection {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+h1,
+h2 {
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-stretch: 62%;
+  font-weight: 900;
+  font-size: clamp(3rem, 7.5vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-stretch: 75%;
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--link);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 3px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Fills the window so the footer sits at the bottom. Tilted stickers overshoot their
+   boxes; clipping here (not on body, which hands it to the window) stops sideways scroll. */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.app__content {
+  flex: 1;
+  display: grid;
+}
+
+/* Shared by the header, pages and footer so their edges line up */
+.page {
+  width: 100%;
+  max-width: 110rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 3rem);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Forms and long text sit on a board, never on the pegboard */
+.board {
+  background: var(--surface);
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-box);
+}
+
+/* A drawn chevron instead of the browser's marker */
+summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  rotate: -45deg;
+  transition: rotate var(--step) steps(2, end);
+}
+
+details[open] > summary::before {
+  rotate: 45deg;
+}
+
+/* ---------- Forms ---------- */
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field__label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.field__hint {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.field__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem 0.9rem;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-control);
+}
+
+.field__input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.field__input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.field__input[aria-invalid='true'] {
+  border-color: var(--danger);
+  border-width: 3px;
+}
+
+select.field__input {
+  appearance: none;
+  padding-right: 2.5rem;
+  font-weight: 600;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236170bf' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 1.1rem;
+  cursor: pointer;
+}
+
+textarea.field__input {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+input[type='file'].field__input {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+input[type='file'].field__input::file-selector-button {
+  min-height: 36px;
+  margin-right: 0.85rem;
+  padding: 0.35rem 0.9rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 2px solid var(--edge);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.field__input:read-only:not(select):not([type='file']) {
+  color: var(--muted);
+  background: var(--surface-2);
+  border-style: dashed;
+}
+
+.field__error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0 1.25rem;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-control);
+  transition:
+    background-color var(--step) steps(2, end),
+    transform var(--step) steps(2, end);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+.btn--primary {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent-deep);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-deep);
+}
+
+.btn--danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Text-style buttons, used under game cards */
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.15rem 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.link-btn--danger {
+  color: var(--danger);
+}
+
+.link-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.delete-confirm {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.delete-confirm__text {
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.delete-confirm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+/* ---------- Stickers ---------- */
+/* Each kind has its own shape, so meaning never rests on colour alone */
+
+.sticker {
+  --tilt: -6deg;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-stretch: 75%;
+  font-weight: 900;
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--sticker-ink);
+  border: 2px solid var(--sticker-ink);
+  transform: rotate(var(--tilt));
+  white-space: nowrap;
+}
+
+.sticker--round {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--sticker-orange);
+}
+
+.sticker--tag,
+.sticker--plain,
+.sticker--warn {
+  min-height: 1.75rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+}
+
+.sticker--tag {
+  background: var(--sticker-yellow);
+}
+
+.sticker--plain {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--ink);
+}
+
+.sticker--warn {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.2;
+  background: var(--sticker-red);
+  border-style: dashed;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sticker--slap {
+    animation: sticker-slap calc(var(--step) * 2) steps(2, end) both;
+    animation-delay: var(--delay, 0ms);
+  }
+}
+
+@keyframes sticker-slap {
+  from {
+    opacity: 0;
+    transform: rotate(calc(var(--tilt) - 8deg)) scale(1.35);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--tilt)) scale(1);
+  }
+}
+
+/* ---------- Alerts ---------- */
+
+.alert {
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 2px solid currentColor;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+
+.alert--error {
+  color: var(--danger);
+  border-style: dashed;
+}
+
+.alert--success {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

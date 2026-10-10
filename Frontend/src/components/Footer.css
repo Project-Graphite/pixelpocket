@@ -1,0 +1,34 @@
+.footer {
+  margin-top: calc(var(--pitch) * 2);
+  border-top: 2px solid var(--edge);
+  background: var(--surface);
+}
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  min-height: 4rem;
+}
+
+.footer__name {
+  font-stretch: 62%;
+  font-weight: 900;
+  font-size: 1.4rem;
+}
+
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}

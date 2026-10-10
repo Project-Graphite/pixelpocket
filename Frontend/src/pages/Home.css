@@ -1,0 +1,115 @@
+.home {
+  display: grid;
+  gap: calc(var(--pitch) * 3);
+  padding-block: calc(var(--pitch) * 2) calc(var(--pitch) * 4);
+}
+
+.home__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: calc(var(--pitch) * 2);
+}
+
+.home__copy {
+  display: grid;
+  gap: var(--pitch);
+  max-width: 48rem;
+}
+
+.home__copy h1 {
+  font-size: clamp(3rem, 5.4vw, 5.25rem);
+}
+
+.home__lead {
+  max-width: 34rem;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.home__screen {
+  display: grid;
+  justify-items: center;
+}
+
+/* ---------- Newest games ---------- */
+
+.home__wall-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.home__wall-head h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.home__note {
+  max-width: 60ch;
+  margin-block: 0.75rem calc(var(--pitch) * 1.5);
+  color: var(--muted);
+}
+
+.home__more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+}
+
+/* ---------- What you can do ---------- */
+
+.home__points {
+  display: grid;
+  gap: var(--pitch);
+  padding: calc(var(--pitch) * 1.5);
+}
+
+.home__points h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.home__points ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: 0 calc(var(--pitch) * 2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home__points li {
+  max-width: 60ch;
+  padding-block: 1rem;
+  font-size: 1.1rem;
+  border-top: 2px dashed var(--line);
+}
+
+.home__points strong {
+  font-stretch: 75%;
+  font-weight: 900;
+  font-size: 1.35rem;
+}
+
+@media (max-width: 52rem) {
+  .home__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .home__screen {
+    order: -1;
+  }
+
+  .home__screen .lcd {
+    width: min(100%, 18rem);
+  }
+}

@@ -1,0 +1,27 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  color: var(--shell-ink);
+  text-decoration: none;
+}
+
+.logo__icon {
+  width: 1.75rem;
+  height: auto;
+  transform-origin: 50% 8%;
+  transition: transform var(--step) steps(2, end);
+}
+
+.logo__text {
+  font-stretch: 62%;
+  font-weight: 900;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.005em;
+}
+
+.logo:hover .logo__icon {
+  transform: rotate(-8deg);
+}

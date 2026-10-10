@@ -1,0 +1,155 @@
+.pad {
+  --pad-plastic: light-dark(#1d2445, #34418a);
+  --pad-plastic-pressed: light-dark(#0b0f24, #1d2660);
+  --pad-action: var(--sticker-orange);
+  --pad-action-pressed: #d94416;
+  --pad-pill: light-dark(#8790b0, #6370a8);
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'dpad actions'
+    'system system';
+  align-items: center;
+  gap: 1.5rem 1rem;
+  width: min(100%, 30rem);
+  padding: 0.5rem 0.25rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No scrolling, zooming or text selection while pressing buttons */
+.pad__dpad,
+.pad__actions,
+.pad__pill-wrap {
+  touch-action: none;
+}
+
+/* ---------- D-pad ---------- */
+
+.pad__dpad {
+  grid-area: dpad;
+  position: relative;
+  justify-self: start;
+  width: clamp(7.5rem, 36vw, 10rem);
+  aspect-ratio: 1;
+}
+
+.pad__arm,
+.pad__hub {
+  position: absolute;
+  background: var(--pad-plastic);
+}
+
+.pad__arm {
+  width: 33.4%;
+  height: 33.4%;
+}
+
+.pad__arm--up {
+  top: 0;
+  left: 33.3%;
+  border-radius: 6px 6px 0 0;
+}
+
+.pad__arm--down {
+  bottom: 0;
+  left: 33.3%;
+  border-radius: 0 0 6px 6px;
+}
+
+.pad__arm--left {
+  left: 0;
+  top: 33.3%;
+  border-radius: 6px 0 0 6px;
+}
+
+.pad__arm--right {
+  right: 0;
+  top: 33.3%;
+  border-radius: 0 6px 6px 0;
+}
+
+.pad__hub {
+  top: 33.3%;
+  left: 33.3%;
+  width: 33.4%;
+  height: 33.4%;
+}
+
+.pad__arm[data-pressed] {
+  background: var(--pad-plastic-pressed);
+}
+
+/* ---------- A and B ---------- */
+
+.pad__actions {
+  grid-area: actions;
+  position: relative;
+  justify-self: end;
+  width: clamp(8rem, 40vw, 11rem);
+  aspect-ratio: 1.15;
+}
+
+.pad__action {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 44%;
+  aspect-ratio: 1;
+  font-stretch: 75%;
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--sticker-ink);
+  background: var(--pad-action);
+  border: 2px solid var(--sticker-ink);
+  border-radius: 50%;
+}
+
+.pad__action--b {
+  left: 2%;
+  bottom: 8%;
+}
+
+.pad__action--a {
+  right: 2%;
+  top: 8%;
+}
+
+.pad__action[data-pressed] {
+  background: var(--pad-action-pressed);
+  transform: translateY(2px) scale(0.96);
+}
+
+/* ---------- Select and Start ---------- */
+
+.pad__system {
+  grid-area: system;
+  display: flex;
+  justify-content: center;
+  gap: 1.75rem;
+}
+
+.pad__pill-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.pad__pill {
+  width: 3.4rem;
+  height: 1.1rem;
+  background: var(--pad-pill);
+  border-radius: 999px;
+  transform: rotate(-24deg);
+}
+
+.pad__pill[data-pressed] {
+  filter: brightness(0.75);
+}

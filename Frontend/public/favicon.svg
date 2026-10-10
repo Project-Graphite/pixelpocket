@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40">
+  <title>PixelPocket</title>
+  <!-- A handheld hanging on its hook: body and hang tab, with the euro-slot hole cut out -->
+  <path fill="#ffd43b" stroke="#0f1a33" stroke-width="2" stroke-linejoin="round" fill-rule="evenodd"
+    d="M6 8H10V5A3 3 0 0 1 13 2H19A3 3 0 0 1 22 5V8H26A3 3 0 0 1 29 11V28A10 10 0 0 1 19 38H6A3 3 0 0 1 3 35V11A3 3 0 0 1 6 8Z
+       M13.6 4.4H18.4A1.3 1.3 0 0 1 18.4 7H13.6A1.3 1.3 0 0 1 13.6 4.4Z"/>
+  <!-- The screen, with the pixel face -->
+  <rect x="7" y="11.5" width="18" height="14" rx="1.5" fill="#a9c97a" stroke="#0f1a33" stroke-width="1.5"/>
+  <g fill="#25381a" shape-rendering="crispEdges">
+    <rect x="11" y="14.5" width="2" height="3.5"/>
+    <rect x="19" y="14.5" width="2" height="3.5"/>
+    <rect x="11" y="20" width="2" height="2"/>
+    <rect x="19" y="20" width="2" height="2"/>
+    <rect x="13" y="22" width="6" height="2"/>
+  </g>
+  <!-- D-pad and A button -->
+  <path fill="#0f1a33" d="M9.5 28.5h2v-2h2v2h2v2h-2v2h-2v-2h-2z"/>
+  <circle cx="22.5" cy="30" r="2.2" fill="#ff5b23" stroke="#0f1a33" stroke-width="1.2"/>
+</svg>

@@ -1,54 +1,92 @@
-# Project name
+# PixelPocket
 
-One sentence on what this is and who it is for.
+PixelPocket is a web platform for playing Game Boy games directly in the browser. A visitor picks a title from a library, and it runs in place on the same page, powered by a custom Game Boy emulator compiled to WebAssembly.
 
-## Stack
+## Repository layout
 
-What it is built with, and anything unusual about how it fits together.
+This repository is a monorepo with three top-level projects:
 
-## Running it
-
-```sh
-docker compose up
+```
+PixelPocket/
+├── gb-emulator/   Game Boy emulator core (C++)
+├── Frontend/      Web application (React)
+└── Backend/       API service
 ```
 
-Then open http://localhost:8080.
+Each folder is a self-contained project with its own build and its own README. This document describes how they fit together.
 
-## Layout
+### gb-emulator
 
-| Folder | What it is |
-| :--- | :--- |
-| `web/` | Replace with the real services |
+A Game Boy (DMG) emulator written in C++20: CPU, graphics, sound, timers, input, and cartridge support (ROM-only, MBC1, MBC3 with its real-time clock, and MBC5). It has no dependency on a windowing system or audio library at its core, which lets it run two ways:
 
-## Setting up
+- as a native application, for development and testing, with its own unit test suites and test ROMs
+- compiled to WebAssembly, for use inside the Frontend application
 
-Delete this section once the checklist is done.
+See [`gb-emulator/README.md`](gb-emulator/README.md) for the emulator's full feature list, build instructions, and test suite.
 
-1. Replace the registry entry in `.graphite.yml`, which is the template's own. Set `slug` to the
-   lowercase repository name and update `name`, `summary`, `tags`, `owner`, `authors`, `status`,
-   `listed`, and `deploy`. Pushing it to `main` registers the project through the Registry workflow.
-2. Rename the placeholder service. Every top-level folder containing a `Dockerfile` is a deployable
-   service and is built and pushed automatically. Point the docker entry's `directory` in
-   `.github/dependabot.yml` at each service folder, one entry per service.
-3. Give each service its checks. A folder with a `package.json` gets `npm ci` followed by available
-   `lint`, `test`, and `build` scripts. A folder with a `Makefile` must provide `install`, `lint`, and
-   `test` targets.
-4. Update `compose.yaml` for local development. Put bind mounts, hot reload, and development ports
-   in `compose.override.yaml`. Update `compose.production.yaml` to pull the prebuilt GHCR images,
-   define health checks and persistent volumes, avoid published host ports, and cap CPU and memory.
-5. Add a screenshot or short GIF, the eventual live link, the stack, and clear local instructions
-   to this README.
+### Frontend
 
-Use named service folders even for a single-service project. Images are published as
-`ghcr.io/project-graphite/<repo>/<service>`, and each image name must match its service in the
-production Compose file.
+A React single-page application that is the public face of PixelPocket. It:
 
-Until the platform entry is merged, the `Deploy` job on `main` fails with a clear message. Builds
-and checks continue; only the release record is blocked. Coolify deployment remains a separate,
-reviewed action.
+- opens on a home page with a short start-up animation of the handheld's screen, then the newest library games
+- shows the platform library, plus each user's own games, with search, sorting and pages
+- lets admins add games to the library and users upload `.gb` files to their private "My games", each with an optional cover image
+- runs the selected game on a large on-page screen with the WebAssembly build of `gb-emulator`, with sound through the Web Audio API
+- takes keyboard, gamepad and touch input; touch screens get Game Boy style on-screen buttons
+- keeps battery saves in the player's account, so progress follows them to any device (guests' saves stay in their browser)
+- has light and dark themes, works on phones, tablets and desktops, and includes a privacy policy and terms of service
 
-## Conventions
+### Backend
 
-Pull request titles follow `type(scope): summary` using one of `feat fix chore refactor docs test ci
-perf revert style build`. Squash merges put the title into the history of `main`, so the title
-matters more than the branch name.
+The API service behind the platform. It handles accounts (sign-up, login, password reset, admin roles), the game library and uploads, cover images, and save files. Uploads are checked before they are stored: ROMs must have a valid Game Boy header, and cover images are decoded and re-encoded so only the picture survives. Metadata lives in MongoDB; ROMs, covers and saves live in MinIO object storage.
+
+## Architecture
+
+```
+                 ┌──────────────────────────────┐
+  browser  ───►  │ Frontend (nginx)             │   static site + gb-emulator (WASM)
+                 │   /api/*  ──────────────┐    │
+                 └─────────────────────────┼────┘
+                                           ▼
+                 ┌──────────────────────────────┐      ┌──────────────────────┐
+                 │ Backend (Express)            │ ───► │ MongoDB: users, game │
+                 │ accounts, library, uploads,  │      │ details, save records│
+                 │ saves                        │      └──────────────────────┘
+                 │                              │      ┌──────────────────────┐
+                 │                              │ ───► │ MinIO: ROMs, covers, │
+                 └──────────────────────────────┘      │ save files (private) │
+                                                       └──────────────────────┘
+```
+
+The emulator runs in the visitor's browser, so gameplay has no server round-trip once a game has loaded. Every file goes through the Backend, which checks who may read or change it; nothing in storage is public.
+
+## Deployment
+
+Each project has its own `Dockerfile`, and `docker-compose.yml` at the root runs the platform:
+
+| Service          | Image source         | Role                                                                  |
+| ---------------- | -------------------- | --------------------------------------------------------------------- |
+| `frontend`       | `Frontend/`          | Compiles the emulator to WebAssembly, builds the React app, serves it with nginx, proxies `/api` |
+| `backend`        | `Backend/`           | Express API on port 5000 (internal)                                   |
+| `mongo`          | `mongo:7`            | Database, data kept in the `mongo-data` volume                        |
+| `minio`          | `chainguard/minio`   | File storage for ROMs, covers and saves, kept in the `minio-data` volume |
+| `minio-init`     | `chainguard/minio`   | Runs once: creates the bucket and the Backend's restricted account    |
+| `emulator-tests` | `gb-emulator/`       | Builds the native emulator and runs its tests (`test` profile)        |
+
+```bash
+cp .env.example .env        # then set the passwords and secrets in it
+docker compose up -d --build
+docker compose exec backend node scripts/createAdmin.js    # make your admin account
+```
+
+The site is then at http://localhost:8080 (change with `WEB_PORT`). To build the emulator and run its tests:
+
+```bash
+docker compose --profile test run --rm emulator-tests
+```
+
+## License
+
+PixelPocket is released under the [MIT License](LICENSE).
+
+The test ROMs in `gb-emulator/roms/tests/` (Blargg's test ROMs and `dmg-acid2`) belong to their authors and keep their own licenses. Game Boy games are not part of this project. Users may only upload games they own or have the right to use.

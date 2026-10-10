@@ -1,0 +1,7 @@
+build
+build-wasm
+cmake-build-*
+roms
+compile_commands.json
+Dockerfile
+.dockerignore

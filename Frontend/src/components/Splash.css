@@ -1,0 +1,86 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  cursor: pointer;
+  background-color: var(--ground);
+  background-image: radial-gradient(circle, var(--peg) 1.6px, transparent 2.1px);
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
+}
+
+.splash__console {
+  width: min(82vw, 26rem);
+}
+
+.splash__console .lcd {
+  width: 100%;
+  animation: splash-console-in calc(var(--step) * 3) steps(3, end) both;
+}
+
+/* The screen powers on, the logo drops, then the face appears */
+.splash__console .lcd__screen {
+  animation: splash-power-on calc(var(--step) * 3) steps(3, end) var(--step) both;
+}
+
+.splash__console .lcd__title {
+  animation: lcd-boot 500ms steps(6) 150ms both;
+}
+
+.splash__console .face {
+  animation: splash-face-in 1ms steps(1, end) 700ms both;
+}
+
+/* Leaving: the screen squeezes to a line and the cover fades */
+.splash--leaving {
+  animation: splash-out calc(var(--step) * 3) steps(3, end) forwards;
+}
+
+.splash--leaving .lcd__screen {
+  animation: splash-power-off calc(var(--step) * 2) steps(2, end) forwards;
+}
+
+@keyframes splash-console-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splash-power-on {
+  from {
+    background-color: #1b2a12;
+  }
+  to {
+    background-color: var(--lcd-bg);
+  }
+}
+
+@keyframes splash-face-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splash-power-off {
+  to {
+    transform: scaleY(0.02);
+  }
+}
+
+@keyframes splash-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

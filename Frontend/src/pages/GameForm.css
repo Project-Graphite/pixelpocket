@@ -1,0 +1,147 @@
+.game-form {
+  width: min(100% - 2rem, 42rem);
+  margin-inline: auto;
+  padding-block: calc(var(--pitch) * 2) calc(var(--pitch) * 4);
+}
+
+.game-form__intro {
+  max-width: 60ch;
+  margin-block: 1rem calc(var(--pitch) * 1.5);
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.game-form__board {
+  padding: calc(var(--pitch) * 1.25);
+}
+
+.game-form__note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.game-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.game-form__section {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: calc(var(--pitch) * 2);
+  padding: calc(var(--pitch) * 1.25);
+  border-style: dashed;
+  border-color: var(--danger);
+}
+
+/* ---------- Library / My games choice ---------- */
+
+.choice {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice legend {
+  margin-bottom: 0.5rem;
+}
+
+.choice__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.choice__option:has(input:checked) {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.choice__option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.choice__option input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.2rem;
+  accent-color: var(--accent);
+}
+
+.choice__option span {
+  display: grid;
+  font-weight: 800;
+}
+
+.choice__option small {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* ---------- Cover picker ---------- */
+
+.cover-picker {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.cover-picker__preview {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  color: var(--line);
+  background: var(--surface-2);
+  border: 2px solid var(--edge);
+  border-radius: var(--radius-box);
+}
+
+.cover-picker__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 30rem) {
+  .cover-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .cover-picker__preview {
+    width: 7rem;
+  }
+}
+
+/* ---------- Upload progress ---------- */
+
+.progress {
+  height: 1rem;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 2px solid var(--edge);
+  border-radius: 4px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--step) steps(2, end);
+}

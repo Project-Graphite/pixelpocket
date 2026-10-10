@@ -1,0 +1,127 @@
+.lcd {
+  width: min(100%, 24rem);
+  padding: 1.1rem 1.25rem 1.6rem;
+  background: var(--bezel);
+  border: 2px solid var(--bezel-deep);
+  /* The Game Boy's rounded bottom-right corner */
+  border-radius: 0.9rem 0.9rem 2.6rem 0.9rem;
+}
+
+.lcd__screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1.1rem;
+  aspect-ratio: 160 / 144;
+  overflow: hidden;
+  color: var(--lcd-ink);
+  background: var(--lcd-bg);
+  border-radius: 0.3rem;
+}
+
+/* Pixel grid */
+.lcd__screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(var(--lcd-ink) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lcd-ink) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+.lcd__title {
+  font-family: var(--font-pixel);
+  font-size: clamp(0.7rem, 3.2vw, 0.95rem);
+  letter-spacing: 0.05em;
+  /* Drops in like the Game Boy boot logo */
+  animation: lcd-boot 1.6s steps(12) both;
+}
+
+.face {
+  width: 28%;
+  height: auto;
+  fill: currentColor;
+  overflow: visible;
+}
+
+/* step-end keeps every move to whole pixels */
+.face__eyes {
+  animation: face-look 9s step-end 2.4s infinite;
+}
+
+.face__eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: face-blink 4.6s step-end 2.4s infinite;
+}
+
+.face__eye--right {
+  animation-delay: 2.5s;
+}
+
+.face__mouth {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: face-grin 9s step-end 2.4s infinite;
+}
+
+.lcd:hover .face__eye--right {
+  animation: none;
+  transform: scaleY(0.2);
+}
+
+@keyframes lcd-boot {
+  from {
+    transform: translateY(-8rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes face-blink {
+  0%,
+  90% {
+    transform: scaleY(1);
+  }
+  92% {
+    transform: scaleY(0.2);
+  }
+  96% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes face-look {
+  0%,
+  50% {
+    transform: translateX(0);
+  }
+  52% {
+    transform: translateX(-1px);
+  }
+  66% {
+    transform: translateX(1px);
+  }
+  80% {
+    transform: translateX(0);
+  }
+}
+
+/* The smile widens by one pixel on each side */
+@keyframes face-grin {
+  0%,
+  20% {
+    transform: scaleX(1);
+  }
+  22% {
+    transform: scaleX(1.3333);
+  }
+  34% {
+    transform: scaleX(1);
+  }
+}
