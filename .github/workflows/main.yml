@@ -31,3 +31,16 @@ jobs:
       services: ${{ needs.services.outputs.services }}
       tag: ${{ needs.build.outputs.tag }}
     secrets: inherit
+
+  coolify:
+    name: Deploy to Coolify
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
+        run: |
+          curl --fail --show-error --silent --request POST "$COOLIFY_WEBHOOK" \
+            --header "Authorization: Bearer $COOLIFY_TOKEN"
