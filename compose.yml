@@ -90,8 +90,10 @@ services:
   # Builds the emulator and runs its tests: docker compose --profile test run --rm emulator-tests
   emulator-tests:
     build:
-      context: ./gb-emulator
-      target: test
+      context: ./frontend
+      additional_contexts:
+        emulator: ./gb-emulator
+      target: emulator-test
     profiles: ["test"]
 
 volumes:

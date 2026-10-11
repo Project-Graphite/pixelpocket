@@ -13,9 +13,16 @@ jobs:
     name: Detect
     uses: project-graphite/actions/.github/workflows/reusable-detect-services.yml@main
 
+  checks:
+    name: Checks
+    needs: services
+    uses: project-graphite/actions/.github/workflows/reusable-checks.yml@main
+    with:
+      services: ${{ needs.services.outputs.services }}
+
   build:
     name: Build
-    needs: services
+    needs: [services, checks]
     permissions:
       contents: read
       packages: write
@@ -32,15 +39,6 @@ jobs:
       tag: ${{ needs.build.outputs.tag }}
     secrets: inherit
 
-  coolify:
-    name: Deploy to Coolify
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger deployment
-        env:
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-          COOLIFY_WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
-        run: |
-          curl --fail --show-error --silent --request POST "$COOLIFY_WEBHOOK" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+  secrets:
+    name: Secrets
+    uses: project-graphite/actions/.github/workflows/reusable-gitleaks.yml@main
