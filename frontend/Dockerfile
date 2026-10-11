@@ -33,7 +33,7 @@ RUN cmake -B build -DCMAKE_BUILD_TYPE=Release \
 ENTRYPOINT ["/src/build/gb-emulator"]
 
 # --- Build stage ---
-FROM node:22-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
