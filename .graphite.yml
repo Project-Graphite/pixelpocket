@@ -10,6 +10,7 @@ projects:
     authors: [Omar-Mohamed24]
     status: live
     listed: true
+    pinned: true
     showcase:
       problem: > 
         Playing Game Boy games usually means installing and configuring a desktop emulator, and
