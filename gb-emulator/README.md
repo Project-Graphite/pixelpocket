@@ -45,10 +45,10 @@ Without SDL2, CMake builds only the core and tests. The `gb-emulator` executable
 
 ### WebAssembly
 
-The PixelPocket website runs the core in the browser. It is compiled with Emscripten into `gb.js` and `gb.wasm`, exposing the small C interface in `src/wasm/wasm_api.cpp` (load a ROM from memory, run a frame, read the picture and sound, set buttons, export and import battery saves). The easiest way to build it is with Docker:
+The PixelPocket website runs the core in the browser. It is compiled with Emscripten into `gb.js` and `gb.wasm`, exposing the small C interface in `src/wasm/wasm_api.cpp` (load a ROM from memory, run a frame, read the picture and sound, set buttons, export and import battery saves). The easiest way to build it is with Docker, through the Frontend's Dockerfile:
 
 ```bash
-docker build --target wasm-out --output type=local,dest=dist .
+docker build --build-context emulator=. --target wasm-out --output type=local,dest=dist ../frontend
 ```
 
 Or, with Emscripten installed, `sh scripts/build-wasm.sh dist`. The website's Docker image builds it automatically.

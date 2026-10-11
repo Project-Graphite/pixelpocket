@@ -62,7 +62,7 @@ The emulator runs in the visitor's browser, so gameplay has no server round-trip
 
 ## Deployment
 
-Each project has its own `Dockerfile`, and `compose.yml` at the root runs the whole platform:
+Each service has its own `Dockerfile` (`gb-emulator/` is built inside the Frontend image), and `compose.yml` at the root runs the whole platform:
 
 | Service          | Image source         | Role                                                                  |
 | ---------------- | -------------------- | --------------------------------------------------------------------- |
@@ -71,7 +71,7 @@ Each project has its own `Dockerfile`, and `compose.yml` at the root runs the wh
 | `mongo`          | `mongo:7`            | Database, data kept in the `mongo-data` volume                        |
 | `minio`          | `chainguard/minio`   | File storage for ROMs, covers and saves, kept in the `minio-data` volume |
 | `minio-init`     | `chainguard/minio`   | Runs once: creates the bucket and the Backend's restricted account    |
-| `emulator-tests` | `gb-emulator/`       | Builds the native emulator and runs its tests (`test` profile)        |
+| `emulator-tests` | `frontend/` + `gb-emulator/` | Builds the native emulator and runs its tests (`test` profile)  |
 
 ```bash
 cp .env.example .env        # then set the passwords and secrets in it

@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:wasm": "docker build --target wasm-out --output type=local,dest=public/emulator ../gb-emulator"
+    "build:wasm": "docker build --build-context emulator=../gb-emulator --target wasm-out --output type=local,dest=public/emulator ."
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
