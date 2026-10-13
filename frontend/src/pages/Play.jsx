@@ -24,6 +24,7 @@ import {
   VolumeIcon,
 } from '../components/Icons'
 import NotFound from './NotFound'
+import { setPageMeta } from '../seo'
 import './Play.css'
 
 const readPref = (key, fallback) => {
@@ -152,6 +153,15 @@ function Play() {
       cancelled = true
     }
   }, [id, account])
+
+  useEffect(() => {
+    if (!game) return
+    setPageMeta({
+      title: `Play ${game.title}`,
+      description:
+        game.description || `Play ${game.title} in your browser on PixelPocket, no install needed.`,
+    })
+  }, [game])
 
   useEffect(() => {
     if (!game || authLoading) return undefined

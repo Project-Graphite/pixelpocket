@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /api/
+Disallow: /account
+Disallow: /admin
+Disallow: /my-games
+Disallow: /games/new
+Disallow: /reset-password/
+Disallow: /forgot-password
+
+Sitemap: https://pixelpocket.project-graphite.com/sitemap.xml

@@ -1,4 +1,6 @@
-import { Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import { routeMeta, setPageMeta } from './seo'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { AdminRoute, GuestRoute, ProtectedRoute } from './components/RouteGuards'
@@ -18,6 +20,9 @@ import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 
 function App() {
+  const { pathname } = useLocation()
+  useEffect(() => setPageMeta(routeMeta(pathname)), [pathname])
+
   return (
     <div className="app">
       <Header />
