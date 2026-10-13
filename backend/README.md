@@ -37,7 +37,11 @@ Outside Docker, settings are read from `config.env` in this folder. In Docker, `
 | `JWT_EXPIRES_IN`        | Token lifetime, e.g. `90d`                           |
 | `JWT_COOKIE_EXPIRES_IN` | Cookie lifetime in days                              |
 | `FRONTEND_URL`          | Public site URL, used in password reset links        |
-| `EMAIL_HOST` and others | SMTP for password reset emails; without it, in development, emails are printed in the log |
+| `EMAIL_HOST`            | SMTP server for password reset emails; without it, in development, emails are printed in the log |
+| `EMAIL_PORT`            | SMTP port (default 587)                              |
+| `EMAIL_USERNAME`        | SMTP user; used only together with `EMAIL_PASSWORD`  |
+| `EMAIL_PASSWORD`        | SMTP password                                        |
+| `EMAIL_FROM`            | Sender address (default `PixelPocket <noreply@pixelpocket.local>`) |
 | `S3_ENDPOINT`           | Object storage URL, e.g. `http://minio:9000`; any S3-compatible store works |
 | `S3_BUCKET`             | Bucket name (default `pixelpocket`)                  |
 | `S3_ACCESS_KEY`         | Storage account with access to that bucket only      |
