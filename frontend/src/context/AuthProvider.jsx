@@ -6,7 +6,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Restore the session from the cookie when the page loads
   useEffect(() => {
     api
       .get('/users/session')

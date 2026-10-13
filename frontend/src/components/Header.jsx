@@ -36,7 +36,6 @@ function Header() {
           className="header__nav"
           data-open={menuOpen ? 'true' : undefined}
           aria-label="Main"
-          // Close the phone menu once a link or button is chosen
           onClick={(e) => {
             if (e.target.closest('a, button')) setMenuOpen(false)
           }}

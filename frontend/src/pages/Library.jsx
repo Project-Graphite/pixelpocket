@@ -56,7 +56,6 @@ function Library({ scope }) {
     setParams(next, { replace: 'search' in changes })
   }
 
-  // Search as you type, a moment after typing stops
   useEffect(() => {
     if (query === search) return undefined
     const timer = window.setTimeout(() => update({ search: query, page: 1 }), 300)
@@ -98,7 +97,6 @@ function Library({ scope }) {
 
   const games = result?.data.games ?? []
 
-  // Take the game off the page right away, then reload the page so it fills back up
   const handleDeleted = (deleted) => {
     setResult(
       (r) =>

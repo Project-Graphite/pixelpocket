@@ -110,7 +110,6 @@ exports.createGame = catchAsync(async (req, res, next) => {
     if (!check.ok) return next(new AppError(check.error, 400));
     const rom = check.info;
 
-    // Only admins can add to the library
     const visibility =
         req.user.role === 'admin' && req.body.destination !== 'mine' ? 'library' : 'private';
     const scope =

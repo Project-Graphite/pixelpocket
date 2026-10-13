@@ -45,7 +45,6 @@ function UploadGame() {
     if (!titleEdited) setTitle(header.title || titleFromFileName(file.name))
   }
 
-  // Warn before leaving while an upload runs
   useEffect(() => {
     if (progress === null) return undefined
     const warn = (e) => e.preventDefault()

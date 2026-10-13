@@ -133,7 +133,6 @@ function Play() {
   const settings = useRef({ volume, muted, palette })
   settings.current = { volume, muted, palette }
 
-  // Touch controls show on touch screens unless the player turned them off
   const touch = touchPref === null ? touchSeen : touchPref === 'on'
   const canFullscreen = Boolean(document.fullscreenEnabled)
 
@@ -209,7 +208,6 @@ function Play() {
       }
       engine.current = null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.id, account, authLoading])
 
   const start = useCallback(async () => {
@@ -278,7 +276,6 @@ function Play() {
     else stageRef.current?.requestFullscreen({ navigationUI: 'hide' }).catch(() => {})
   }, [])
 
-  // Game keys only reach the game while it runs; P pauses, F toggles full screen
   useEffect(() => {
     const e = engine.current
     if (e) e.input.enabled = phase === 'running'
@@ -294,7 +291,6 @@ function Play() {
     })
   }, [engineReady, togglePause, toggleFullscreen, canFullscreen])
 
-  // Pause and save when the tab is hidden; save when the page closes
   useEffect(() => {
     const onVisibility = () => {
       if (document.visibilityState !== 'hidden') return
