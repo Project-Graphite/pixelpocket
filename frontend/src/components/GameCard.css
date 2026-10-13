@@ -230,15 +230,21 @@
   font-size: 0.9rem;
 }
 
+/* Keeps the Edit/Delete line's height under an empty slot */
+.game-card__actions--ghost {
+  visibility: hidden;
+}
+
 .game-card__actions .delete-confirm {
   flex-basis: 100%;
 }
 
-/* Empty slots while games load, sized from their own width so the column stays put */
+/* Empty slots while games load, sized from their own width so the column stays put.
+   Beside games they just stretch to the row's height. */
 .game-card--empty {
   container-type: inline-size;
 }
 
-.game-card--empty .game-card__holder {
+.game-rack__row:not(:has(.game-card:not(.game-card--empty))) .game-card--empty .game-card__holder {
   min-height: calc(100cqi / 0.8);
 }
