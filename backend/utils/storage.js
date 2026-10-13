@@ -67,7 +67,11 @@ exports.pipeTo = async (key, res, headers) => {
     await new Promise((resolve, reject) => {
         object.Body.on('error', reject);
         res.on('finish', resolve);
-        res.on('close', resolve);
+        // A client that disconnects must not leave the storage connection open
+        res.on('close', () => {
+            object.Body.destroy();
+            resolve();
+        });
         object.Body.pipe(res);
     });
 };

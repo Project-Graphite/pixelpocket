@@ -6,6 +6,10 @@ const sendEmail = require('./../utils/email');
 const resetPasswordEmail = require('./../utils/resetPasswordEmail');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+
+// Compared against when the email is unknown, so a missing account takes as long as a wrong password
+const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', 12);
 
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
@@ -46,17 +50,20 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     const user = await User.findOne({ email }).select('+password');
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    const passwordMatches = await bcrypt.compare(password, user ? user.password : DUMMY_HASH);
+    if (!user || !passwordMatches) {
         return next(new AppError('Incorrect email or password', 401));
     }
 
     sendJWT(user, res);
 });
 
-exports.logout = (req, res) => {
+// Also ends the user's other sessions: tokens issued before now stop working
+exports.logout = catchAsync(async (req, res) => {
+    if (req.user) await User.updateOne({ _id: req.user._id }, { passwordChangedAt: new Date() });
     res.clearCookie('jwt', cookieOptions());
     res.status(200).json({ status: 'success' });
-};
+});
 
 // The login token comes from the httpOnly cookie, or a Bearer header for API tools
 const getToken = (req) => {
@@ -108,6 +115,17 @@ exports.identify = catchAsync(async (req, res, next) => {
     next();
 });
 
+const sendResetEmail = async (user, resetURL) => {
+    try {
+        await sendEmail({ to: user.email, ...resetPasswordEmail(resetURL) });
+    } catch (err) {
+        console.error('Reset email failed:', err.message);
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false }).catch(() => {});
+    }
+};
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
     if (typeof req.body.email !== 'string') {
         return next(new AppError('Please provide your email address.', 400));
@@ -128,16 +146,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const resetURL = `${frontendUrl}/reset-password/${resetToken}`;
 
-    try {
-        await sendEmail({ to: user.email, ...resetPasswordEmail(resetURL) });
-    } catch (err) {
-        user.passwordResetToken = undefined;
-        user.passwordResetExpires = undefined;
-        await user.save({ validateBeforeSave: false });
-
-        return next(err);
-    }
-
+    // Not awaited, so the reply doesn't reveal whether the account exists
+    sendResetEmail(user, resetURL);
     response();
 });
 

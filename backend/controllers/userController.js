@@ -41,6 +41,14 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 // Erases the account, the user's uploaded games and all their saves. Library games stay.
 exports.deleteMe = catchAsync(async (req, res, next) => {
     const userId = req.user._id;
+    const account = await User.findById(userId).select('+password');
+    if (
+        typeof req.body.password !== 'string' ||
+        !(await account.correctPassword(req.body.password, account.password))
+    ) {
+        return next(new AppError('Your password is wrong.', 401));
+    }
+
     const games = await Game.find({ owner: userId, visibility: 'private' }).select(
         '+romKey +coverKey',
     );

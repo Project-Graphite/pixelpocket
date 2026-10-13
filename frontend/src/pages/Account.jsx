@@ -133,6 +133,7 @@ function DeleteAccount() {
   const { setUser } = useAuth()
   const navigate = useNavigate()
   const [confirming, setConfirming] = useState(false)
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -140,7 +141,7 @@ function DeleteAccount() {
     setError('')
     setSubmitting(true)
     try {
-      await api.delete('/users/deleteMe')
+      await api.delete('/users/deleteMe', { password })
       setUser(null)
       navigate('/', { replace: true })
     } catch (err) {
@@ -158,24 +159,34 @@ function DeleteAccount() {
       </p>
       <Alert>{error}</Alert>
       {confirming ? (
-        <div className="account__row">
-          <button
-            type="button"
-            className="btn btn--danger"
-            onClick={handleDelete}
-            disabled={submitting}
-          >
-            {submitting ? 'Deleting…' : 'Yes, delete my account'}
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => setConfirming(false)}
-            disabled={submitting}
-          >
-            Keep my account
-          </button>
-        </div>
+        <>
+          <Field
+            label="Your password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <div className="account__row">
+            <button
+              type="button"
+              className="btn btn--danger"
+              onClick={handleDelete}
+              disabled={submitting || !password}
+            >
+              {submitting ? 'Deleting…' : 'Yes, delete my account'}
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setConfirming(false)}
+              disabled={submitting}
+            >
+              Keep my account
+            </button>
+          </div>
+        </>
       ) : (
         <div className="account__row">
           <button type="button" className="btn btn--danger" onClick={() => setConfirming(true)}>
