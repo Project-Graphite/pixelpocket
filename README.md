@@ -85,7 +85,7 @@ The site is then at http://localhost:8080 (change with `WEB_PORT`). To build the
 docker compose --profile test run --rm emulator-tests
 ```
 
-In production, `compose.production.yaml` runs the same services from prebuilt images (`ghcr.io/project-graphite/pixelpocket/frontend` and `backend`), with resource limits and health checks. Its secrets come from the environment: `MONGO_PASSWORD`, `MINIO_ROOT_PASSWORD`, `S3_SECRET_KEY`, `JWT_SECRET`, and the `EMAIL_*` settings.
+In production, [`deploy/pixelpocket/values.yaml`](https://github.com/project-graphite/platform/blob/main/deploy/pixelpocket/values.yaml) in `platform` runs the same services from prebuilt images (`ghcr.io/project-graphite/pixelpocket/frontend` and `backend`), with resource limits and health checks. It carries its own copy of `infra/minio`, so change both together. Its secrets are in the organisation's secrets repository: `MONGO_PASSWORD`, `MINIO_ROOT_PASSWORD`, `S3_SECRET_KEY`, `JWT_SECRET`, `EMAIL_HOST` and `EMAIL_FROM`, plus the optional `EMAIL_PORT`, `EMAIL_USERNAME` and `EMAIL_PASSWORD`.
 
 ## License
 
