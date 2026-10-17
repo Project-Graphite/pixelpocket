@@ -12,7 +12,7 @@ FROM scratch AS wasm-out
 COPY --from=wasm /out/ /
 
 # --- Native build and tests ---
-FROM ubuntu:24.04 AS emulator-test
+FROM ubuntu:25.10 AS emulator-test
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential cmake \
